@@ -1,0 +1,23 @@
+# Compilations C++
+*.o
+*.out
+*.exe
+*.a
+*.so
+*.dll
+
+# build
+/build/
+/bin/
+/dist/
+
+# Make
+*.d
+*.core
+*~
+
+# executable
+/hero_realms
+
+#vscode
+.vscode/
