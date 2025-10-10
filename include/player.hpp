@@ -22,4 +22,4 @@ public:
     //void buyCard(Market* marche, int index);
 };
 
-#endif
+#endif  
