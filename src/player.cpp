@@ -9,3 +9,16 @@ Player::~Player() {
     // delete pioche;
     // delete defausse;
 }
+
+void Player::initializeDeck() {
+    // Initialiser le deck de départ du joueur
+    // Ajouter des cartes de base au deck
+}
+
+void Player::showHand() const {
+    // Afficher les cartes dans la main du joueur
+    // cout << "Main de " << name << " :" << endl;
+    // for (const auto& card : main) {
+    //     cout << "- " << card->getName() << endl;
+    // }
+}
