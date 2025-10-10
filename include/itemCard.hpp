@@ -12,16 +12,16 @@ class ItemCard : public Card {
     protected:
         int goldValue;
         int combatValue;
-        ItemCardName itemName;
+        CardId itemName;
         
     public:
-        ItemCard(const std::string& n, int c, Faction f, ItemCardName itemType);
+        ItemCard(const std::string& n, int c, Faction f, CardId itemType);
         void play(Player* owner, Game* game) override;
         Faction getType() const override { return faction; }
         virtual void sacrifice(Player* owner, Game* game);
         
         // Getter pour le type d'item
-        ItemCardName getItemName() const { return itemName; }
+        CardId getItemName() const { return itemName; }
         
         // Méthodes pour obtenir les valeurs
         int getGoldValue() const { return goldValue; }

@@ -9,6 +9,8 @@ ActionCard::ActionCard(const std::string& n, int c, Faction f, CardId id)
 }
 
 void ActionCard::play(Player* owner, Game* game) {
+    std::cout << owner->getName() << " joue " << name << std::endl;
+
     // Exécuter l'effet primaire de la carte
     executePrimaryEffect(owner, game);
     
@@ -17,7 +19,6 @@ void ActionCard::play(Player* owner, Game* game) {
         executeAllyEffect(owner, game);
     }
     
-    std::cout << owner->getName() << " joue " << name << std::endl;
 }
 
 void ActionCard::executePrimaryEffect(Player* owner, Game* game) {
@@ -54,12 +55,11 @@ bool ActionCard::canActivateAllyEffect(Player* owner) const {
 }
 
 // === EFFETS SPÉCIFIQUES DE TAXATION ===
-void ActionCard::taxationPrimaryEffect(Player* owner, Game* /* game */) {
+void ActionCard::taxationPrimaryEffect(Player* owner, Game* game) {
     owner->addGold(2);
     std::cout << "  Taxation: " << owner->getName() << " gagne 2 gold" << std::endl;
 }
-
-void ActionCard::taxationAllyEffect(Player* owner, Game* /* game */) {
+void ActionCard::taxationAllyEffect(Player* owner, Game* game) {
     owner->addGold(2);
     std::cout << "  Taxation (Allié Impérial): " << owner->getName() << " gagne 2 gold supplémentaires" << std::endl;
 }
