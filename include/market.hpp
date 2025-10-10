@@ -13,6 +13,7 @@ public:
     //Card* getCard(int index);
     //Card* buyGem();
     void refill();
+    void display() const;
 };
 
 #endif
