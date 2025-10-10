@@ -1,0 +1,83 @@
+#ifndef CARD_ID_H
+#define CARD_ID_H
+
+enum class CardId {
+    // Cartes de base
+    OR,
+    EPEE_COURTE,
+    DAGUE,
+    RUBIS,
+    GEMME_DE_FEU,
+    
+    // Cartes Action Faction Impériale
+    TAXATION,
+    RECRUTEMENT,
+    COMMANDEMENT,
+    DOMINATION,
+    RALLIEMENT_DES_TROUPES,
+    SERRER_LES_RANGS,
+    PAROLE_DE_PUISSANCE,
+    
+    // Cartes Champions Faction Impériale
+    HOMME_D_ARMES,
+    PERCEPTEUR_DE_DIME,
+    CRISTOV_LE_JUSTE,
+    DARIAN_MAGE_DE_GUERRE,
+    KRAKA_GRAND_PRETRE,
+    MAITRE_WEYAN,
+    ARKUS_DRAGON_IMPERIAL,
+    
+    // Cartes Faction Guilde
+    BENEFICE,
+    INTIMIDATION,
+    POT_DE_VIN,
+    CASSER_ET_PILLER,
+    MENACE_DE_MORT,
+    FOURBERIE,
+    BOMBE_INCENDIAIRE,
+    MISE_A_PRIX,
+    
+    // Champions Faction Guilde
+    BANDIT_DES_RUES,
+    BORG_MERCENAIRE_OGRE,
+    MYROS_MAGE_DE_LA_GUILDE,
+    PAROV_L_EXECUTEUR,
+    RAKE_MAITRE_ASSASSIN,
+    RASMUS_LE_CONTREBANDIER,
+    
+    // Cartes Faction Nécros
+    INFLUENCE,
+    ENERGIE_SOMBRE,
+    SOMBRE_RECOMPENSE,
+    CONTACT_MORTEL,
+    DRAIN_DE_VIE,
+    
+    // Champions Faction Nécros
+    PRETRE_DU_CULTE,
+    CULTISTE_DE_LA_MORT,
+    LA_PUTREFACTION,
+    RAYLA_TISSEUSE_DE_FINS,
+    KRYTHOS_MAITRE_VAMPIRE,
+    LYS_L_INAPPARENT,
+    VARRICK_LE_NECROMANCIEN,
+    TYRANNOR_LE_DEVOREUR,
+    
+    // Cartes Faction Sauvage
+    ETINCELLE,
+    DON_ELFIQUE,
+    DON_DE_LA_NATURE,
+    SAUVAGERIE,
+    MALEDICTION_ELFIQUE,
+    FORME_DE_LOUP,
+    
+    // Champions Faction Sauvage
+    GROGNARD_ORQUE,
+    SHAMANE_DES_LOUPS,
+    LOUP_TERRIFIANT,
+    BROELYN_TISSEUSE_DE_SAVOIRS,
+    CRON_LE_BERSERKER,
+    TORGEN_BRISE_PIERRE,
+    GRAK_GEANT_DE_LA_TEMPETE
+};
+
+#endif
