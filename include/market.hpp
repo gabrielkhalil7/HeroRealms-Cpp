@@ -19,6 +19,7 @@ public:
     Card* buyGem();
     void refill();
     void display() const;
+    void addSacrificedCard(Card* card) { cartesSacrifiees.push_back(card); }
 };
 
 #endif

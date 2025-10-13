@@ -5,6 +5,7 @@
 #include "../include/deck.hpp"
 #include <iostream>
 #include <string>
+#include <algorithm>
 
 Player::Player(std::string playerName) : name(playerName), health(30), goldReserve(0), combatReserve(0) {
     pioche = new Deck();
@@ -89,4 +90,24 @@ void Player::playCard(int cardIndex, Game* game) {
     
     // Jouer la carte
     card->play(this, game);
+}
+
+void Player::removeCardFromHand(Card* card) {
+    auto it = std::find(main.begin(), main.end(), card);
+    if (it != main.end()) {
+        main.erase(it);
+        std::cout << "Carte " << card->getName() << " retirée de la main de " << name << std::endl;
+    }
+}
+
+void Player::removeCardFromPlay(Card* card) {
+    auto it = std::find(cartesEnJeu.begin(), cartesEnJeu.end(), card);
+    if (it != cartesEnJeu.end()) {
+        cartesEnJeu.erase(it);
+        std::cout << "Carte " << card->getName() << " retirée du jeu de " << name << std::endl;
+    }
+}
+
+void Player::addCardToPlay(Card* card) {
+    cartesEnJeu.push_back(card);
 }

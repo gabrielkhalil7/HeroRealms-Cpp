@@ -51,6 +51,13 @@ public:
     
     // Méthode utilitaire pour compter les cartes d'une faction en jeu
     int countCardsInPlayByFaction(Faction faction) const;
+    
+    // Méthodes pour retirer des cartes
+    void removeCardFromHand(Card* card);
+    void removeCardFromPlay(Card* card);
+    
+    // Méthode helper pour les tests
+    void addCardToPlay(Card* card);
 };
 
 #endif  

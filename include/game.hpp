@@ -15,6 +15,12 @@ public:
     void start();
     void playTurn(Player* currentPlayer);
     bool isFinished() const;
+    // getters et setters
+    Player* getJoueur1() const { return joueur1; }
+    Player* getJoueur2() const { return joueur2; }
+    Market* getMarket() const { return marche; }
+    bool isGodMode() const { return godMode; }
+    void setGodMode(bool mode) { godMode = mode; }
 };
 
 #endif
