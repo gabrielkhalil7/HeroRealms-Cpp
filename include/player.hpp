@@ -21,6 +21,8 @@ class Player {
     std::vector<ChampionCard*> championsEnJeu; // Champions en jeu
     int goldReserve;
     int combatReserve;
+    bool nextActionCardToTopOfDeck; // Flag pour l'effet Pot-de-Vin
+    bool nextAnyCardToTopOfDeck; // Flag pour l'effet Fourberie
 
 
 public:
@@ -48,6 +50,8 @@ public:
     // Méthodes pour accéder aux cartes en jeu
     const std::vector<Card*>& getCartesEnJeu() const { return cartesEnJeu; }
     const std::vector<ChampionCard*>& getChampionsEnJeu() const { return championsEnJeu; }
+    std::vector<ChampionCard*>& getChampionsEnJeu() { return championsEnJeu; }  // Version non-const
+    const std::vector<Card*>& getHand() const { return main; }  // Accéder à la main
     
     // Méthode utilitaire pour compter les cartes d'une faction en jeu
     int countCardsInPlayByFaction(Faction faction) const;
@@ -58,6 +62,24 @@ public:
     
     // Méthode helper pour les tests
     void addCardToPlay(Card* card);
+    
+    // Méthodes pour l'effet Pot-de-Vin
+    void setNextActionCardToTopOfDeck(bool value) { nextActionCardToTopOfDeck = value; }
+    bool isNextActionCardToTopOfDeck() const { return nextActionCardToTopOfDeck; }
+    void addCardToTopOfDeck(Card* card);  // Nouvelle méthode pour ajouter une carte au-dessus de la pioche
+    
+    // Méthodes pour l'effet Fourberie
+    void setNextAnyCardToTopOfDeck(bool value) { nextAnyCardToTopOfDeck = value; }
+    bool isNextAnyCardToTopOfDeck() const { return nextAnyCardToTopOfDeck; }
+    
+    // Méthodes pour assommer des champions
+    void stunChampion(ChampionCard* champion);  // Assommer un champion (l'envoyer en défausse)
+    std::vector<ChampionCard*> getTargetableChampions() const;  // Obtenir les champions attaquables (selon règles des Gardes)
+    
+    // Méthodes pour accéder à la défausse
+    const std::vector<Card*>& getDiscardPile() const;
+    void addToDiscardPile(Card* card);  // Ajouter une carte à la défausse
+    Card* moveCardFromDiscardToTopOfDeck(Card* card);  // Retirer une carte de la défausse et la mettre au-dessus de la pioche
 };
 
 #endif  

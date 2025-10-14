@@ -22,5 +22,8 @@ class ChampionCard : public Card {
         void takeDamage(int damage);
         bool isAlive() const { return defense > 0; }
         void setGuarding(bool guard) { isGuarding = guard; }
+        bool getGuarding() const { return isGuarding; }
+        bool getActivated() const { return isActivated; }
+        void setActivated(bool activated) { isActivated = activated; }
 };
 #endif

@@ -18,7 +18,7 @@ class ItemCard : public Card {
         ItemCard(const std::string& n, int c, Faction f, CardId itemType);
         void play(Player* owner, Game* game) override;
         Faction getType() const override { return faction; }
-        virtual void sacrifice(Player* owner, Game* game);
+        void sacrifice(Player* owner, Game* game, bool fromEffects = false);
         
         // Getter pour le type d'item
         CardId getItemName() const { return itemName; }

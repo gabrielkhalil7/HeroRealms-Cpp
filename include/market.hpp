@@ -7,15 +7,16 @@ class Card;
 class ItemCard;
 
 class Market {
-    std::vector<Card*> cartesVisibles;
-    std::vector<Card*> piocheDuMarche;
-    std::vector<ItemCard*> gemmesDeFeu;
-    std::vector<Card*> cartesSacrifiees;
+    std::vector<Card*> cartesVisibles; // Cartes visibles sur le marché
+    std::vector<Card*> piocheDuMarche; // Pioche du marché
+    std::vector<ItemCard*> gemmesDeFeu; // Gemmes de feu
+    std::vector<Card*> cartesSacrifiees; // Cartes sacrifiées
 
 public:
     Market();
     ~Market();
     Card* getCard(int index);
+    Card* buyCard(int index);  // Acheter une carte du marché (la retire des cartes visibles)
     Card* buyGem();
     void refill();
     void display() const;

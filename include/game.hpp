@@ -18,6 +18,7 @@ public:
     // getters et setters
     Player* getJoueur1() const { return joueur1; }
     Player* getJoueur2() const { return joueur2; }
+    Player* getOpponent(Player* player) const;  // Nouvelle méthode pour obtenir l'adversaire
     Market* getMarket() const { return marche; }
     bool isGodMode() const { return godMode; }
     void setGodMode(bool mode) { godMode = mode; }

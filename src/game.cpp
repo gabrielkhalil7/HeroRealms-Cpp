@@ -15,11 +15,22 @@ Game::Game(const std::string& player1Name, const std::string& player2Name){
     marche = new Market();
 
     // initialisation des decks de depart
-    //joueur1->initializeDeck();
-    //joueur2->initializeDeck();
+    joueur1->initializeDeck();
+    joueur2->initializeDeck();
+
+    // Pioche initiale selon les règles
+    // Le premier joueur (joueur1) pioche 3 cartes
+    std::cout << "\n--- Pioche initiale ---" << std::endl;
+    joueur1->draw(3);
+    std::cout << joueur1->getName() << " pioche 3 cartes (premier joueur)." << std::endl;
+    
+    // Le deuxième joueur pioche 5 cartes
+    joueur2->draw(5);
+    std::cout << joueur2->getName() << " pioche 5 cartes (deuxième joueur)." << std::endl;
 
     cout << "=== Partie Hero Realms initialisée ===" << endl;
     cout << joueur1->getName() << " VS " << joueur2->getName() << endl;
+    cout << "=======================================" << endl;
 }
 
 Game::~Game() {
@@ -27,24 +38,14 @@ Game::~Game() {
     delete joueur2;
     delete marche;
 }
-/*
+
 void Game::start() {
     cout << "=== Début de la partie ===" << endl;
-
+    // Boucle principale de la partie
     Player* currentPlayer = joueur1;
-    Player* opponent = joueur2;
-
     while (!isFinished()) {
         playTurn(currentPlayer);
-
-        // alternance des joueurs
-        if (currentPlayer == joueur1) {
-            currentPlayer = joueur2;
-            opponent = joueur1;
-        } else {
-            currentPlayer = joueur1;
-            opponent = joueur2;
-        }
+        currentPlayer = (currentPlayer == joueur1) ? joueur2 : joueur1;
     }
 
     cout << "=== Fin de la partie ===" << endl;
@@ -58,35 +59,15 @@ void Game::start() {
 void Game::playTurn(Player* currentPlayer) {
     cout << "\n--- Tour de " << currentPlayer->getName() << " ---" << endl;
 
-    // 🔹 Afficher la main et le marché
+    // afficher la main et le marché
     currentPlayer->showHand();
     marche->display();
-
-    cout << "\nActions possibles :" << endl;
-    cout << "  [1] Jouer une carte" << endl;
-    cout << "  [2] Acheter une carte" << endl;
-    cout << "  [3] Finir le tour" << endl;
-    cout << "Choix : ";
-
-    int choix;
-    cin >> choix;
-
-    switch (choix) {
-        case 1:
-            currentPlayer->playCards(); // méthode que tu coderas plus tard
-            break;
-        case 2:
-            currentPlayer->buyCard(*marche, godMode); // achat (avec mode dieu si actif)
-            break;
-        case 3:
-        default:
-            cout << "Fin du tour de " << currentPlayer->getName() << "." << endl;
-            currentPlayer->endTurn();
-            break;
-    }
 }
 
 bool Game::isFinished() const {
     return (joueur1->getHealth() <= 0 || joueur2->getHealth() <= 0);
 }
-*/
+
+Player* Game::getOpponent(Player* player) const {
+    return (player == joueur1) ? joueur2 : joueur1;
+}

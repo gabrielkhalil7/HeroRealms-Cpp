@@ -49,7 +49,7 @@ void ItemCard::play(Player* owner, Game* /* game */) {
     }
 }
 
-void ItemCard::sacrifice(Player* owner, Game* game) {
+void ItemCard::sacrifice(Player* owner, Game* game, bool /*fromEffects*/) {
     // Par défaut, les objets n'ont pas d'effet de sacrifice spécial
     std::cout << name << " sacrifié (aucun effet spécial)" << std::endl;
     owner->removeCardFromPlay(this);

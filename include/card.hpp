@@ -29,7 +29,7 @@ class Card {
         
         // Méthodes polymorphes
         virtual void play(Player* owner, Game* game) = 0;
-        virtual void sacrifice(Player* owner, Game* game) = 0;
+        virtual void sacrifice(Player* owner, Game* game, bool fromEffects = false) = 0;
         virtual Faction getType() const = 0;
         virtual std::string getDescription() const;
 };
