@@ -7,7 +7,6 @@ class ChampionCard;
 
 class ActionCard : public Card {
     protected:
-        // Ces valeurs seront utilisées pour les effets de base
         int goldValue;
         int combatValue;
         int healthValue;

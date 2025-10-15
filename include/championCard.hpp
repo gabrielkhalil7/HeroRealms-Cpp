@@ -8,12 +8,15 @@ class Game;
 
 class ChampionCard : public Card {
     protected:
+        int goldValue;
+        int combatValue;
+        int healthValue;
         int defense;
         bool isGuarding;
         bool isActivated;
         
     public:
-        ChampionCard(const std::string& n, int c, Faction f, CardId id, int def);
+        ChampionCard(const std::string& n, int c, Faction f, CardId id);
         void play(Player* owner, Game* game) override;
         Faction getType() const override { return faction; }
         
