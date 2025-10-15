@@ -272,6 +272,12 @@ void Player::addToDiscardPile(Card* card) {
     }
 }
 
+void Player::removeCardFromDiscard(Card* card) {
+    if (card != nullptr) {
+        defausse->removeCard(card);
+    }
+}
+
 Card* Player::moveCardFromDiscardToTopOfDeck(Card* card) {
     Card* removedCard = defausse->removeCard(card);
     if (removedCard != nullptr) {
@@ -280,4 +286,55 @@ Card* Player::moveCardFromDiscardToTopOfDeck(Card* card) {
         return removedCard;
     }
     return nullptr;
+}
+
+bool Player::hasGuardingChampions() const {
+    for (const ChampionCard* champion : championsEnJeu) {
+        if (champion->getGuarding()) {
+            return true;
+        }
+    }
+    return false;
+}
+
+void Player::useCombat(int amount) {
+    if (amount <= combatReserve) {
+        combatReserve -= amount;
+    } else {
+        std::cout << "Pas assez de Combat disponible." << std::endl;
+    }
+}
+
+void Player::takeDamage(int damage) {
+    health -= damage;
+    if (health < 0) {
+        health = 0;
+    }
+}
+
+void Player::endTurn() {
+    // Remettre les ressources à 0
+    goldReserve = 0;
+    combatReserve = 0;
+    
+    // Défausser toutes les cartes en jeu (sauf les champions)
+    for (Card* card : cartesEnJeu) {
+        defausse->addCard(card);
+    }
+    cartesEnJeu.clear();
+    
+    // Défausser toutes les cartes de la main
+    for (Card* card : main) {
+        defausse->addCard(card);
+    }
+    main.clear();
+    
+    // Réinitialiser les flags d'effet
+    nextActionCardToTopOfDeck = false;
+    nextAnyCardToTopOfDeck = false;
+    
+    // Piocher 5 nouvelles cartes
+    draw(5);
+    
+    std::cout << name << " termine son tour et pioche 5 nouvelles cartes." << std::endl;
 }

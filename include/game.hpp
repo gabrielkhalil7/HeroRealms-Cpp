@@ -15,6 +15,13 @@ public:
     void start();
     void playTurn(Player* currentPlayer);
     bool isFinished() const;
+    
+    // Méthodes pour les actions du joueur
+    void playCardFromHand(Player* currentPlayer);
+    void readCardDescription(Player* currentPlayer);
+    void buyCardFromMarket(Player* currentPlayer);
+    void attackTarget(Player* currentPlayer);
+    
     // getters et setters
     Player* getJoueur1() const { return joueur1; }
     Player* getJoueur2() const { return joueur2; }

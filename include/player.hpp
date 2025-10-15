@@ -75,10 +75,16 @@ public:
     // Méthodes pour assommer des champions
     void stunChampion(ChampionCard* champion);  // Assommer un champion (l'envoyer en défausse)
     std::vector<ChampionCard*> getTargetableChampions() const;  // Obtenir les champions attaquables (selon règles des Gardes)
+    bool hasGuardingChampions() const;  // Vérifier s'il y a des champions avec Garde
+    
+    // Méthodes de combat
+    void useCombat(int amount);  // Utiliser une certaine quantité de Combat
+    void takeDamage(int damage);  // Subir des dégâts
     
     // Méthodes pour accéder à la défausse
     const std::vector<Card*>& getDiscardPile() const;
     void addToDiscardPile(Card* card);  // Ajouter une carte à la défausse
+    void removeCardFromDiscard(Card* card);  // Retirer une carte de la défausse
     Card* moveCardFromDiscardToTopOfDeck(Card* card);  // Retirer une carte de la défausse et la mettre au-dessus de la pioche
 };
 

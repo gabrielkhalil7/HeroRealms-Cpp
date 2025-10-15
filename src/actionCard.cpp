@@ -570,7 +570,7 @@ void ActionCard::sombreRecompensePrimaryEffect(Player* owner, Game* game) {
     // Sacrifier une carte de la main ou de la défausse
     Card* cardToSacrifice = chooseCardToSacrifice(owner);
     if (cardToSacrifice != nullptr) {
-        cardToSacrifice->sacrifice(owner, game, true); // true indique que c'est un sacrifice via un effet
+        sacrificeChosenCard(owner, game, cardToSacrifice);
     }
 }
 void ActionCard::sombreRecompenseAllyEffect(Player* owner, Game* /*game*/) {
@@ -586,7 +586,7 @@ void ActionCard::contactMortelPrimaryEffect(Player* owner, Game* game) {
     // Sacrifier une carte de la main ou de la défausse
     Card* cardToSacrifice = chooseCardToSacrifice(owner);
     if (cardToSacrifice != nullptr) {
-        cardToSacrifice->sacrifice(owner, game, true); // true indique que c'est un sacrifice via un effet
+        sacrificeChosenCard(owner, game, cardToSacrifice);
     }
 }
 void ActionCard::contactMortelAllyEffect(Player* owner, Game* /*game*/) {
@@ -602,7 +602,7 @@ void ActionCard::drainDeViePrimaryEffect(Player* owner, Game* game) {
     // Sacrifier une carte de la main ou de la défausse
     Card* cardToSacrifice = chooseCardToSacrifice(owner);
     if (cardToSacrifice != nullptr) {
-        cardToSacrifice->sacrifice(owner, game, true); // true indique que c'est un sacrifice via un effet
+        sacrificeChosenCard(owner, game, cardToSacrifice);
     }
 }
 void ActionCard::drainDeVieAllyEffect(Player* owner, Game* /*game*/) {
@@ -618,7 +618,7 @@ void ActionCard::laPutrefactionPrimaryEffect(Player* owner, Game* game) {
     // Sacrifier une carte de la main ou de la défausse
     Card* cardToSacrifice = chooseCardToSacrifice(owner);
     if (cardToSacrifice != nullptr) {
-        cardToSacrifice->sacrifice(owner, game, true); // true indique que c'est un sacrifice via un effet
+        sacrificeChosenCard(owner, game, cardToSacrifice);
     }
 }
 void ActionCard::laPutrefactionAllyEffect(Player* owner, Game* /*game*/) {
@@ -1032,4 +1032,43 @@ Card* ActionCard::chooseCardFromOwnHand(Player* owner) const {
     } while (choice < 1 || choice > static_cast<int>(hand.size()));
     
     return hand[choice - 1];
+}
+
+void ActionCard::sacrificeChosenCard(Player* owner, Game* game, Card* cardToSacrifice) const {
+    // Déterminer d'où vient la carte (main ou défausse)
+    const std::vector<Card*>& hand = owner->getHand();
+    const std::vector<Card*>& discardPile = owner->getDiscardPile();
+    
+    bool fromHand = false;
+    bool fromDiscard = false;
+    
+    // Vérifier si la carte est dans la main
+    for (Card* card : hand) {
+        if (card == cardToSacrifice) {
+            fromHand = true;
+            break;
+        }
+    }
+    
+    // Vérifier si la carte est dans la défausse
+    if (!fromHand) {
+        for (Card* card : discardPile) {
+            if (card == cardToSacrifice) {
+                fromDiscard = true;
+                break;
+            }
+        }
+    }
+    
+    // Retirer la carte de son origine
+    if (fromHand) {
+        owner->removeCardFromHand(cardToSacrifice);
+        std::cout << cardToSacrifice->getName() << " retiré de la main." << std::endl;
+    } else if (fromDiscard) {
+        owner->removeCardFromDiscard(cardToSacrifice);
+        std::cout << cardToSacrifice->getName() << " retiré de la défausse." << std::endl;
+    }
+    
+    // Exécuter l'effet de sacrifice s'il y en a un
+    cardToSacrifice->sacrifice(owner, game, true);
 }

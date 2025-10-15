@@ -77,6 +77,7 @@ class ActionCard : public Card {
         Card* chooseCardToSacrifice(Player* owner) const;  // Choisir une carte à sacrifier (main ou défausse)
         Card* chooseCardFromOpponentHand(Player* opponent) const;  // Choisir une carte de la main de l'adversaire
         Card* chooseCardFromOwnHand(Player* owner) const;  // Choisir une carte de sa propre main
+        void sacrificeChosenCard(Player* owner, Game* game, Card* cardToSacrifice) const;  // Gérer le sacrifice d'une carte choisie
 };
 
 #endif
