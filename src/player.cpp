@@ -5,9 +5,11 @@
 #include "../include/game.hpp"
 #include "../include/deck.hpp"
 #include "../include/market.hpp"
+#include "../include/display.hpp"
 #include <iostream>
 #include <string>
 #include <algorithm>
+#include <iomanip>
 
 Player::Player(std::string playerName) : name(playerName), health(50), goldReserve(0), combatReserve(0), nextActionCardToTopOfDeck(false), nextAnyCardToTopOfDeck(false) {
     pioche = new Deck();
@@ -52,16 +54,37 @@ void Player::initializeDeck() {
 }
 
 void Player::showHand() const {
-    // Afficher les cartes dans la main du joueur
-    std::cout << "\n=== Main de " << name << " (" << main.size() << " cartes) ===" << std::endl;
+    std::cout << std::endl;
+    Display::printSeparator("✋ MAIN DE " + name + " ✋", "=", 60);
+    
     if (main.empty()) {
-        std::cout << "Aucune carte en main." << std::endl;
+        std::cout << Display::CYAN << "┌────────────────────────────────────────────────────────┐" << Display::RESET << std::endl;
+        std::cout << Display::CYAN << "│" << Display::WHITE << "                 Aucune carte en main                  " << Display::CYAN << "│" << Display::RESET << std::endl;
+        std::cout << Display::CYAN << "└────────────────────────────────────────────────────────┘" << Display::RESET << std::endl;
     } else {
+        std::cout << Display::CYAN << "┌────────────────────────────────────────────────────────┐" << Display::RESET << std::endl;
         for (size_t i = 0; i < main.size(); i++) {
-            std::cout << i + 1 << ". " << main[i]->getName() << std::endl;
+            Card* card = main[i];
+            std::string factionColor = Display::getFactionColor(card->getFaction());
+            std::string factionSymbol = Display::getFactionSymbol(card->getFaction());
+            
+            std::cout << Display::CYAN << "│ " << Display::WHITE << "[" << (i + 1) << "] " 
+                      << factionColor << Display::BOLD << std::left << std::setw(20) << card->getName() << Display::RESET
+                      << Display::YELLOW << " 💰" << std::setw(2) << card->getCost() << Display::WHITE << " Or  "
+                      << factionColor << factionSymbol 
+                      << std::string(25 - card->getName().length(), ' ')
+                      << Display::CYAN << "│" << Display::RESET << std::endl;
         }
+        std::cout << Display::CYAN << "└────────────────────────────────────────────────────────┘" << Display::RESET << std::endl;
     }
-    std::cout << "Santé: " << health << " | Or: " << goldReserve << " | Combat: " << combatReserve << std::endl;
+    
+    // Affichage des ressources avec barre de santé
+    std::cout << std::endl;
+    std::cout << Display::WHITE << "🏥 Santé: ";
+    Display::printHealthBar(health, 50);
+    std::cout << "  ";
+    Display::printResourceDisplay(goldReserve, combatReserve);
+    std::cout << std::endl << std::endl;
 }
 
 void Player::addGold(int amount) {

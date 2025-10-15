@@ -2,9 +2,11 @@
 #include "../include/card.hpp"
 #include "../include/actionCard.hpp"
 #include "../include/itemCard.hpp"
+#include "../include/display.hpp"
 #include <iostream>
 #include <algorithm> 
 #include <random>
+#include <iomanip>
 
 Market::Market() { // initialisation du marche par defaut (remplissage des cartes)
     // Initialisation des vecteurs
@@ -187,12 +189,36 @@ Card* Market::buyGem() {
 
 // Affiche les cartes visibles sur le marché
 void Market::display() const {
-    std::cout << " === Marché ================ " << std::endl;
+    std::cout << std::endl;
+    Display::printSeparator("🏪 MARCHÉ 🏪", "=", 80);
+    
+    // En-tête du marché
+    std::cout << Display::CYAN << "┌──────────────────────────── " << Display::BOLD << Display::YELLOW << "CARTES DISPONIBLES" << Display::RESET << Display::CYAN << " ────────────────────────────┐" << Display::RESET << std::endl;
+    
+    // Affichage des cartes en rangées
     for (size_t i = 0; i < cartesVisibles.size(); ++i) {
-        std::cout << "|" << i + 1 << ". " << cartesVisibles[i]->getName() << " (Coût: " << cartesVisibles[i]->getCost() << " Or)" << std::endl;
+        Card* card = cartesVisibles[i];
+        std::string factionColor = Display::getFactionColor(card->getFaction());
+        std::string factionSymbol = Display::getFactionSymbol(card->getFaction());
+        
+        std::cout << Display::CYAN << "│ " << Display::WHITE << "[" << (i + 1) << "] " 
+                  << factionColor << Display::BOLD << std::left << std::setw(18) << card->getName() << Display::RESET
+                  << Display::YELLOW << " 🪙" << std::setw(2) << card->getCost() << Display::WHITE << " Or  "
+                  << factionColor << factionSymbol << "  " 
+                  << std::string(35 - card->getName().length(), ' ') 
+                  << Display::CYAN << "│" << Display::RESET << std::endl;
     }
-    std::cout << "|6. Gemmes de feu disponibles: " << gemmesDeFeu.size() << std::endl;
-    std::cout << " ============================= " << std::endl;
+    
+    // Ligne des gemmes de feu
+    std::cout << Display::CYAN << "│ " << Display::WHITE << "[6] " 
+              << Display::RED << Display::BOLD << std::left << std::setw(18) << "Gemmes de feu" << Display::RESET
+              << Display::YELLOW << " 🪙2" << Display::WHITE << " Or  "
+              << Display::RED << "💎 " << Display::WHITE << "Stock: " << Display::GREEN << Display::BOLD << gemmesDeFeu.size() 
+              << std::string(30, ' ')
+              << Display::CYAN << "│" << Display::RESET << std::endl;
+    
+    std::cout << Display::CYAN << "└────────────────────────────────────────────────────────────────────────────────┘" << Display::RESET << std::endl;
+    std::cout << std::endl;
 }
 
 // Remplit le marché si il y a moins de 5 cartes visibles

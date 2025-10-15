@@ -1,5 +1,6 @@
 #include "../include/game.hpp"
 #include "../include/championCard.hpp"
+#include "../include/display.hpp"
 #include <iostream>
 
 using namespace std;
@@ -41,7 +42,12 @@ Game::~Game() {
 }
 
 void Game::start() {
-    cout << "=== Début de la partie ===" << endl;
+    Display::clearScreen();
+    Display::printTitle();
+    
+    cout << Display::GREEN << Display::BOLD << "🎯 Début de la partie 🎯" << Display::RESET << endl;
+    Display::printSeparator();
+    
     // Boucle principale de la partie
     Player* currentPlayer = joueur1;
     while (!isFinished()) {
@@ -49,82 +55,87 @@ void Game::start() {
         currentPlayer = (currentPlayer == joueur1) ? joueur2 : joueur1;
     }
 
-    cout << "=== Fin de la partie ===" << endl;
+    Display::clearScreen();
+    Display::printTitle();
+    cout << Display::RED << Display::BOLD << "🏆 FIN DE LA PARTIE 🏆" << Display::RESET << endl;
+    Display::printSeparator();
 
     if (joueur1->getHealth() <= 0)
-        cout << joueur2->getName() << " remporte la victoire !" << endl;
+        cout << Display::GREEN << Display::BOLD << "🎉 " << joueur2->getName() << " remporte la victoire ! 🎉" << Display::RESET << endl;
     else
-        cout << joueur1->getName() << " remporte la victoire !" << endl;
+        cout << Display::GREEN << Display::BOLD << "🎉 " << joueur1->getName() << " remporte la victoire ! 🎉" << Display::RESET << endl;
 
-    std::cout << "=============================" << std::endl;
-    std::cout << "        HERO REALMS         " << std::endl;
-    std::cout << "=============================" << std::endl;
-    std::cout << " 1. Commencer la partie      " << std::endl;
-    std::cout << " 2. Quitter                  " << std::endl;
-    std::cout << "=============================" << std::endl;
+    Display::printSeparator();
+    std::cout << Display::CYAN << "Retour au menu principal..." << Display::RESET << std::endl;
 }
 
 void Game::playTurn(Player* currentPlayer) {
-    cout << "\n--- Tour de " << currentPlayer->getName() << " ---" << endl;
-    cout << "Santé: " << currentPlayer->getHealth() << " | Or: " << currentPlayer->getGold() 
-         << " | Combat: " << currentPlayer->getCombat() << endl;
-
-    bool turnFinished = false;
+    Display::clearScreen();
+    Display::printGameBoard();
+    
+        Display::printSeparator("🎮 TOUR DE " + currentPlayer->getName() + " 🎮", "=", 60);    bool turnFinished = false;
     
     while (!turnFinished) {
         // Afficher la main et le marché
-        cout << "\n=== État actuel ===" << endl;
         currentPlayer->showHand();
         marche->display();
         
         // Afficher les champions en jeu des deux joueurs
-        cout << "\n=== Champions en jeu ===" << endl;
-        cout << currentPlayer->getName() << " : ";
+        Display::printSeparator("⚔️  CHAMPIONS EN JEU ⚔️", "-", 60);
+        
+        // Champions du joueur actuel
+        cout << Display::GREEN << Display::BOLD << "🛡️  " << currentPlayer->getName() << ": " << Display::RESET;
         if (currentPlayer->getChampionsEnJeu().empty()) {
-            cout << "Aucun champion" << endl;
+            cout << Display::WHITE << "Aucun champion" << Display::RESET << endl;
         } else {
             cout << endl;
             for (size_t i = 0; i < currentPlayer->getChampionsEnJeu().size(); i++) {
-                cout << "  " << (i+1) << ". " << currentPlayer->getChampionsEnJeu()[i]->getName();
+                cout << Display::GREEN << "  ⚔️  " << (i+1) << ". " << Display::BOLD 
+                     << currentPlayer->getChampionsEnJeu()[i]->getName() << Display::RESET;
                 if (currentPlayer->getChampionsEnJeu()[i]->getActivated()) {
-                    cout << " (Activé)";
+                    cout << Display::YELLOW << " (Activé)" << Display::RESET;
                 }
                 if (currentPlayer->getChampionsEnJeu()[i]->getGuarding()) {
-                    cout << " (Garde)";
+                    cout << Display::BLUE << " (🛡️ Garde)" << Display::RESET;
                 }
                 cout << endl;
             }
         }
         
+        // Champions de l'adversaire
         Player* opponent = getOpponent(currentPlayer);
-        cout << opponent->getName() << " : ";
+        cout << Display::RED << Display::BOLD << "💀 " << opponent->getName() << ": " << Display::RESET;
         if (opponent->getChampionsEnJeu().empty()) {
-            cout << "Aucun champion" << endl;
+            cout << Display::WHITE << "Aucun champion" << Display::RESET << endl;
         } else {
             cout << endl;
             for (size_t i = 0; i < opponent->getChampionsEnJeu().size(); i++) {
-                cout << "  " << (i+1) << ". " << opponent->getChampionsEnJeu()[i]->getName();
+                cout << Display::RED << "  ⚔️  " << (i+1) << ". " << Display::BOLD 
+                     << opponent->getChampionsEnJeu()[i]->getName() << Display::RESET;
                 if (opponent->getChampionsEnJeu()[i]->getActivated()) {
-                    cout << " (Activé)";
+                    cout << Display::YELLOW << " (Activé)" << Display::RESET;
                 }
                 if (opponent->getChampionsEnJeu()[i]->getGuarding()) {
-                    cout << " (Garde)";
+                    cout << Display::BLUE << " (🛡️ Garde)" << Display::RESET;
                 }
                 cout << endl;
             }
         }
         
-        // Menu d'actions
-        cout << "\n=== Actions disponibles ===" << endl;
-        cout << "1. Jouer une carte de votre main" << endl;
-        cout << "2. Lire la description d'une carte" << endl;
-        cout << "3. Acheter une carte du marché" << endl;
-        cout << "4. Attaquer l'adversaire ou ses champions" << endl;
-        cout << "5. Finir le tour" << endl;
+        // Menu d'actions amélioré
+        cout << endl;
+        Display::printSeparator("🎯 ACTIONS DISPONIBLES 🎯", "-", 60);
+        cout << Display::CYAN << "┌──────────────────────────────────────────────────────────┐" << Display::RESET << endl;
+        cout << Display::CYAN << "│ " << Display::WHITE << "[1] 🃏 Jouer une carte de votre main                  " << Display::CYAN << "│" << Display::RESET << endl;
+        cout << Display::CYAN << "│ " << Display::WHITE << "[2] 📖 Lire la description d'une carte                " << Display::CYAN << "│" << Display::RESET << endl;
+        cout << Display::CYAN << "│ " << Display::WHITE << "[3] 🏪 Acheter une carte du marché                   " << Display::CYAN << "│" << Display::RESET << endl;
+        cout << Display::CYAN << "│ " << Display::WHITE << "[4] ⚔️  Attaquer l'adversaire ou ses champions        " << Display::CYAN << "│" << Display::RESET << endl;
+        cout << Display::CYAN << "│ " << Display::WHITE << "[5] ⏭️  Finir le tour                                 " << Display::CYAN << "│" << Display::RESET << endl;
+        cout << Display::CYAN << "└──────────────────────────────────────────────────────────┘" << Display::RESET << endl;
         
         int choice;
         do {
-            cout << "Votre choix (1-5): ";
+            cout << Display::YELLOW << Display::BOLD << "🎯 Votre choix (1-5): " << Display::RESET;
             cin >> choice;
         } while (choice < 1 || choice > 5);
         
@@ -145,11 +156,22 @@ void Game::playTurn(Player* currentPlayer) {
                 turnFinished = true;
                 break;
         }
+        
+        if (!turnFinished) {
+            cout << Display::WHITE << "\nAppuyez sur Entrée pour continuer..." << Display::RESET;
+            cin.ignore();
+            cin.get();
+        }
     }
     
-    // Fin du tou
-    cout << "\n--- Fin du tour de " << currentPlayer->getName() << " ---" << endl;
+    // Fin du tour
+    cout << endl;
+    Display::printSeparator("⏭️  FIN DU TOUR DE " + currentPlayer->getName() + " ⏭️", "=", 60);
     currentPlayer->endTurn(); // Remet Or et Combat a 0, defausse les cartes en jeu, pioche 5 cartes
+    
+    cout << Display::WHITE << "Appuyez sur Entrée pour continuer..." << Display::RESET;
+    cin.ignore();
+    cin.get();
 }
 
 bool Game::isFinished() const {
