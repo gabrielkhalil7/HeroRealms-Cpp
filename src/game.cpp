@@ -147,9 +147,9 @@ void Game::playTurn(Player* currentPlayer) {
         }
     }
     
-    // Fin du tour - nettoyer les ressources temporaires
+    // Fin du tou
     cout << "\n--- Fin du tour de " << currentPlayer->getName() << " ---" << endl;
-    currentPlayer->endTurn(); // Remet Or et Combat à 0, défausse les cartes en jeu, pioche 5 cartes
+    currentPlayer->endTurn(); // Remet Or et Combat a 0, defausse les cartes en jeu, pioche 5 cartes
 }
 
 bool Game::isFinished() const {

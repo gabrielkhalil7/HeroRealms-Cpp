@@ -323,7 +323,7 @@ void Player::endTurn() {
     }
     cartesEnJeu.clear();
     
-    // Défausser toutes les cartes de la main
+    // Defausser toutes les cartes de la main (celles qui ne sont pas jouees)
     for (Card* card : main) {
         defausse->addCard(card);
     }
