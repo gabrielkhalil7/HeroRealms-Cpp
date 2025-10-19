@@ -12,23 +12,23 @@ class ItemCard : public Card {
     protected:
         int goldValue;
         int combatValue;
-        CardId itemName;
         
     public:
-        ItemCard(const std::string& n, int c, Faction f, CardId itemType);
+        ItemCard(const std::string& n, int c, Faction f, CardId cardId);
         void play(Player* owner, Game* game) override;
         Faction getType() const override { return faction; }
-        void sacrifice(Player* owner, Game* game, bool fromEffects = false);
-        
-        // Getter pour le type d'item
-        CardId getItemName() const { return itemName; }
+        void sacrifice(Player* owner, Game* game, bool fromEffects = false) override;
         
         // Méthodes pour obtenir les valeurs
         int getGoldValue() const { return goldValue; }
         int getCombatValue() const { return combatValue; }
         
-        // Méthode statique pour créer des cartes spécifiques
-        static ItemCard* createRuby();
+        // Méthodes statiques pour créer des cartes spécifiques
+        static ItemCard* createOr();
+        static ItemCard* createEpeeCourte();
+        static ItemCard* createDague();
+        static ItemCard* createRubis();
+        static ItemCard* createGemmeDeFeu();
 };
 
 #endif
