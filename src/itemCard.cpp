@@ -62,23 +62,39 @@ void ItemCard::play(Player* owner, Game* game) {
 
 // Méthode sacrifice - effet de sacrifice de la carte
 void ItemCard::sacrifice(Player* owner, Game* game, bool fromEffects) {
-    (void)game;  // Suppress unused parameter warning
-    (void)fromEffects;  // Suppress unused parameter warning
-    std::cout << "Sacrifice " << name << std::endl;
+    bool canBeSacrified = false;
     
     // Effet spécial de sacrifice selon le type de carte
     switch(cardId) {
         case CardId::GEMME_DE_FEU:
             owner->addCombat(3);
-            std::cout << "Effet de sacrifice de Gemme de feu: Le joueur gagne 3 combat" << std::endl;
+            std::cout << name << " sacrifiée : " << owner->getName() << " gagne 3 Combat supplémentaires !" << std::endl;
+            canBeSacrified = true;
+            break;
+        case CardId::OR:
+        case CardId::EPEE_COURTE:
+        case CardId::DAGUE:
+        case CardId::RUBIS:
+            // Ces cartes peuvent être sacrifiées mais sans effet spécial
+            std::cout << name << " sacrifiée (aucun effet spécial)" << std::endl;
             break;
         default:
-            std::cout << "Pas d'effet de sacrifice spécial pour cette carte" << std::endl;
+            std::cout << "  Pas d'effet de sacrifice pour " << name << std::endl;
             break;
     }
+
+    // On ne peut pas sacrifier une carte qui n'a pas d'effet de sacrifice
+    if (!canBeSacrified && !fromEffects) {
+        std::cout << "  Impossible de sacrifier " << name << " : pas d'effet de sacrifice." << std::endl;
+        return;
+    }
+
+    // Retirer la carte du jeu et l'ajouter à la zone de sacrifice
+    owner->removeCardFromPlay(this);
+    game->getMarket()->addSacrificedCard(this);
 }
 
-// Méthodes statiques pour créer des cartes spécifiques
+// Méthodes statiques pour créer des cartes spécifiques 
 ItemCard* ItemCard::createOr() {
     return new ItemCard("Or", 1, Faction::NEUTRE, CardId::OR);
 }

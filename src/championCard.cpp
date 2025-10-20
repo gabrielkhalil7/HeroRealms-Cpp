@@ -2,9 +2,10 @@
 #include "../include/player.hpp"
 #include "../include/game.hpp"
 #include <iostream>
+#include <algorithm>
 
 ChampionCard::ChampionCard(const std::string& n, int c, Faction f, CardId id) 
-    : Card(n, c, f, id), goldValue(0), combatValue(0), healthValue(0), defense(0), isGuarding(false), isActivated(false) {
+    : Card(n, c, f, id), goldValue(0), combatValue(0), healthValue(0), defense(0), defenseActuelle(0), isGuarding(false), isActivated(false) {
         // initialisation des descriptions
         switch (id) {
             // ========== IMPERIAL CHAMPIONS ==========
@@ -140,7 +141,7 @@ ChampionCard::ChampionCard(const std::string& n, int c, Faction f, CardId id)
                 break;
                 
             // ========== WILD CHAMPIONS ==========
-            case CardId::BROELYN_TISSEUSE_DE_SORTS:
+            case CardId::BROELYN_TISSEUSE_DE_SAVOIRS:
                 description = "{Dépense}: Gagnez 2 Or. Si vous avez un autre allié Sauvage en jeu, l'adversaire défausse une carte.";
                 defense = 6;
                 goldValue = 2;
@@ -152,31 +153,31 @@ ChampionCard::ChampionCard(const std::string& n, int c, Faction f, CardId id)
                 combatValue = 5;
                 isGuarding = false;
                 break;
-            case CardId::LOUP_SINISTRE:
+            case CardId::LOUP_TERRIFIANT:
                 description = "{Dépense}: Gagnez 3 Combat. Si vous avez un autre allié Sauvage en jeu, gagnez 4 Combat.";
                 defense = 5;
                 combatValue = 3;
                 isGuarding = true;
                 break;
-            case CardId::GRAK_GEANT_DE_TEMPETE:
+            case CardId::GRAK_GEANT_DE_LA_TEMPETE:
                 description = "{Dépense}: Gagnez 6 Combat. Vous pouvez piocher une carte. Si vous le faites, défaussez une carte. Si vous avez un autre allié Sauvage en jeu, piochez une carte puis défaussez une carte.";
                 defense = 7;
                 combatValue = 6;
                 isGuarding = true;
                 break;
-            case CardId::GROGNARD_ORC:
+            case CardId::GROGNARD_ORQUE:
                 description = "{Dépense}: Gagnez 2 Combat. Si vous avez un autre allié Sauvage en jeu, piochez une carte.";
                 defense = 3;
                 combatValue = 2;
                 isGuarding = true;
                 break;
-            case CardId::TORGEN_FEND_ROC:
+            case CardId::TORGEN_BRISE_PIERRE:
                 description = "{Dépense}: Gagnez 4 Combat. L'adversaire défausse une carte.";
                 defense = 7;
                 combatValue = 4;
                 isGuarding = true;
                 break;
-            case CardId::CHAMAN_LOUP:
+            case CardId::SHAMANE_DES_LOUPS:
                 description = "{Dépense}: Gagnez 2 Combat +1 Combat pour chaque autre carte Sauvage que vous avez en jeu.";
                 defense = 4;
                 combatValue = 2;
@@ -186,27 +187,53 @@ ChampionCard::ChampionCard(const std::string& n, int c, Faction f, CardId id)
                 description = "Champion non definie.";
                 break;
         }
+        
+        // Initialiser la défense actuelle à la défense maximale
+        defenseActuelle = defense;
 }
 
 void ChampionCard::play(Player* owner, Game* game) {
-    (void)game;  // Game context may be needed later
-    
     std::cout << owner->getName() << " joue le champion " << name << std::endl;
-    std::cout << "Defense: " << defense;
+    std::cout << "Defense: " << defenseActuelle;
     if (isGuarding) {
         std::cout << " (Garde)";
     }
     std::cout << std::endl;
     
-    // Champions go directly to the champion play area (handled by Player class)
-    // They don't trigger immediate effects - they need to be activated (expended)
+    // Quand un champion est joué depuis la main, il est automatiquement activé ce tour-ci
+    std::cout << "\n🛡️  " << name << " active immédiatement sa capacité:" << std::endl;
+    activateAbility(owner, game);
 }
 
 void ChampionCard::sacrifice(Player* owner, Game* game, bool fromEffects) {
-    (void)owner;
-    (void)game;
-    (void)fromEffects;
+    // Les champions ne peuvent pas être sacrifiés volontairement, 
+    // seulement par des effets de cartes (fromEffects = true)
+    if (!fromEffects) {
+        std::cout << "Impossible de sacrifier " << name << " : les champions ne peuvent pas être sacrifiés volontairement." << std::endl;
+        return;
+    }
     
+    // Les champions peuvent avoir des effets spéciaux quand ils sont sacrifiés
+    switch (cardId) {
+        // Pour l'instant, aucun champion n'a d'effet de sacrifice spécial
+        // Mais on peut en ajouter ici plus tard
+        default:
+            std::cout << name << " sacrifié (aucun effet spécial)" << std::endl;
+            break;
+    }
+
+    // Retirer le champion du jeu et l'ajouter à la zone de sacrifice
+    // Le champion doit être retiré de la zone des champions en jeu
+    auto& championsEnJeu = owner->getChampionsEnJeu();
+    auto it = std::find(championsEnJeu.begin(), championsEnJeu.end(), this);
+    if (it != championsEnJeu.end()) {
+        championsEnJeu.erase(it);
+        std::cout << "Champion " << name << " retiré du jeu de " << owner->getName() << std::endl;
+    }
+    
+    // Ajouter à la zone de sacrifice
+    owner->removeCardFromPlay(this);
+    game->getMarket()->addSacrificedCard(this);
 }
 
 void ChampionCard::activateAbility(Player* owner, Game* game) {
@@ -610,7 +637,7 @@ void ChampionCard::activateAbility(Player* owner, Game* game) {
         }
         
         // ========== WILD CHAMPIONS ==========
-        case CardId::BROELYN_TISSEUSE_DE_SORTS: {
+        case CardId::BROELYN_TISSEUSE_DE_SAVOIRS: {
             (void)game;
             owner->addGold(goldValue);
             std::cout << "Gagne " << goldValue << " Or" << std::endl;
@@ -628,7 +655,8 @@ void ChampionCard::activateAbility(Player* owner, Game* game) {
                     std::cin >> discardChoice;
                     if (discardChoice >= 1 && discardChoice <= static_cast<int>(opponent->getHand().size())) {
                         Card* discarded = opponent->getHand()[discardChoice - 1];
-                        opponent->discardCard(discarded);
+                        opponent->removeCardFromHand(discarded);
+                        opponent->addToDiscardPile(discarded);
                         std::cout << "L'adversaire défausse " << discarded->getName() << std::endl;
                     }
                 }
@@ -646,7 +674,7 @@ void ChampionCard::activateAbility(Player* owner, Game* game) {
             }
             break;
             
-        case CardId::LOUP_SINISTRE:
+        case CardId::LOUP_TERRIFIANT:
             (void)game;
             owner->addCombat(combatValue);
             std::cout << "Gagne " << combatValue << " Combat" << std::endl;
@@ -656,7 +684,7 @@ void ChampionCard::activateAbility(Player* owner, Game* game) {
             }
             break;
             
-        case CardId::GRAK_GEANT_DE_TEMPETE: {
+        case CardId::GRAK_GEANT_DE_LA_TEMPETE: {
             owner->addCombat(combatValue);
             std::cout << "Gagne " << combatValue << " Combat" << std::endl;
             
@@ -675,7 +703,8 @@ void ChampionCard::activateAbility(Player* owner, Game* game) {
                     std::cin >> discardChoice;
                     if (discardChoice >= 1 && discardChoice <= static_cast<int>(owner->getHand().size())) {
                         Card* card = owner->getHand()[discardChoice - 1];
-                        owner->discardCard(card);
+                        owner->removeCardFromHand(card);
+                        owner->addToDiscardPile(card);
                     }
                 }
             }
@@ -693,14 +722,15 @@ void ChampionCard::activateAbility(Player* owner, Game* game) {
                     std::cin >> discardChoice;
                     if (discardChoice >= 1 && discardChoice <= static_cast<int>(owner->getHand().size())) {
                         Card* card = owner->getHand()[discardChoice - 1];
-                        owner->discardCard(card);
+                        owner->removeCardFromHand(card);
+                        owner->addToDiscardPile(card);
                     }
                 }
             }
             break;
         }
             
-        case CardId::GROGNARD_ORC:
+        case CardId::GROGNARD_ORQUE:
             (void)game;
             owner->addCombat(combatValue);
             std::cout << "Gagne " << combatValue << " Combat" << std::endl;
@@ -710,7 +740,7 @@ void ChampionCard::activateAbility(Player* owner, Game* game) {
             }
             break;
             
-        case CardId::TORGEN_FEND_ROC: {
+        case CardId::TORGEN_BRISE_PIERRE: {
             owner->addCombat(combatValue);
             std::cout << "Gagne " << combatValue << " Combat" << std::endl;
             
@@ -726,14 +756,15 @@ void ChampionCard::activateAbility(Player* owner, Game* game) {
                 std::cin >> discardChoice;
                 if (discardChoice >= 1 && discardChoice <= static_cast<int>(opponent->getHand().size())) {
                     Card* discarded = opponent->getHand()[discardChoice - 1];
-                    opponent->discardCard(discarded);
+                    opponent->removeCardFromHand(discarded);
+                    opponent->addToDiscardPile(discarded);
                     std::cout << "L'adversaire défausse " << discarded->getName() << std::endl;
                 }
             }
             break;
         }
             
-        case CardId::CHAMAN_LOUP:
+        case CardId::SHAMANE_DES_LOUPS:
             (void)game;
             owner->addCombat(combatValue);
             std::cout << "Gagne " << combatValue << " Combat" << std::endl;
@@ -757,9 +788,9 @@ void ChampionCard::activateAbility(Player* owner, Game* game) {
 }
 
 void ChampionCard::takeDamage(int damage) {
-    defense -= damage;
-    if (defense < 0) {
-        defense = 0;
+    defenseActuelle -= damage;
+    if (defenseActuelle < 0) {
+        defenseActuelle = 0;
     }
 }
 
@@ -852,29 +883,29 @@ ChampionCard* ChampionCard::createVarrickLeNecromancien() {
 
 // ========== WILD CHAMPIONS ==========
 ChampionCard* ChampionCard::createBroelynTisseuseDeSorts() {
-    return new ChampionCard("Broelyn, Tisseuse de Sorts", 4, Faction::SAUVAGE, CardId::BROELYN_TISSEUSE_DE_SORTS);
+    return new ChampionCard("Broelyn Tisseuse de Savoirs", 4, Faction::SAUVAGE, CardId::BROELYN_TISSEUSE_DE_SAVOIRS);
 }
 
 ChampionCard* ChampionCard::createCronLeBerserker() {
     return new ChampionCard("Cron le Berserker", 6, Faction::SAUVAGE, CardId::CRON_LE_BERSERKER);
 }
 
-ChampionCard* ChampionCard::createLoupSinistre() {
-    return new ChampionCard("Loup Sinistre", 5, Faction::SAUVAGE, CardId::LOUP_SINISTRE);
+ChampionCard* ChampionCard::createLoupTerrifiant() {
+    return new ChampionCard("Loup Terrifiant", 5, Faction::SAUVAGE, CardId::LOUP_TERRIFIANT);
 }
 
 ChampionCard* ChampionCard::createGrakGeantDeTempete() {
-    return new ChampionCard("Grak, Géant de Tempête", 8, Faction::SAUVAGE, CardId::GRAK_GEANT_DE_TEMPETE);
+    return new ChampionCard("Grak Géant de Tempête", 8, Faction::SAUVAGE, CardId::GRAK_GEANT_DE_LA_TEMPETE);
 }
 
 ChampionCard* ChampionCard::createGrognardOrc() {
-    return new ChampionCard("Grognard Orc", 3, Faction::SAUVAGE, CardId::GROGNARD_ORC);
+    return new ChampionCard("Grognard Orque", 3, Faction::SAUVAGE, CardId::GROGNARD_ORQUE);
 }
 
 ChampionCard* ChampionCard::createTorgenFendRoc() {
-    return new ChampionCard("Torgen Fend-Roc", 7, Faction::SAUVAGE, CardId::TORGEN_FEND_ROC);
+    return new ChampionCard("Torgen Brise-Pierre", 7, Faction::SAUVAGE, CardId::TORGEN_BRISE_PIERRE);
 }
 
 ChampionCard* ChampionCard::createChamanLoup() {
-    return new ChampionCard("Chaman Loup", 2, Faction::SAUVAGE, CardId::CHAMAN_LOUP);
+    return new ChampionCard("Shamane des Loups", 2, Faction::SAUVAGE, CardId::SHAMANE_DES_LOUPS);
 }

@@ -73,6 +73,7 @@ void Game::playTurn(Player* currentPlayer) {
     Display::clearScreen();
     Display::printGameBoard();
     
+    
         Display::printSeparator("🎮 TOUR DE " + currentPlayer->getName() + " 🎮", "=", 60);    bool turnFinished = false;
     
     while (!turnFinished) {
@@ -91,13 +92,18 @@ void Game::playTurn(Player* currentPlayer) {
             cout << endl;
             for (size_t i = 0; i < currentPlayer->getChampionsEnJeu().size(); i++) {
                 cout << Display::GREEN << "  ⚔️  " << (i+1) << ". " << Display::BOLD 
-                     << currentPlayer->getChampionsEnJeu()[i]->getName() << Display::RESET;
+                     << currentPlayer->getChampionsEnJeu()[i]->getName() << Display::RESET
+                     << Display::WHITE << " [" << Display::RED << Display::BOLD 
+                     << currentPlayer->getChampionsEnJeu()[i]->getDefense() << " PV" 
+                     << Display::WHITE << "]" << Display::RESET;
                 if (currentPlayer->getChampionsEnJeu()[i]->getActivated()) {
                     cout << Display::YELLOW << " (Activé)" << Display::RESET;
                 }
                 if (currentPlayer->getChampionsEnJeu()[i]->getGuarding()) {
                     cout << Display::BLUE << " (🛡️ Garde)" << Display::RESET;
                 }
+                // DEBUG: Afficher les propriétés du champion
+                cout << Display::MAGENTA << " [DEBUG: getGuarding()=" << (currentPlayer->getChampionsEnJeu()[i]->getGuarding() ? "true" : "false") << "]" << Display::RESET;
                 cout << endl;
             }
         }
@@ -111,13 +117,18 @@ void Game::playTurn(Player* currentPlayer) {
             cout << endl;
             for (size_t i = 0; i < opponent->getChampionsEnJeu().size(); i++) {
                 cout << Display::RED << "  ⚔️  " << (i+1) << ". " << Display::BOLD 
-                     << opponent->getChampionsEnJeu()[i]->getName() << Display::RESET;
+                     << opponent->getChampionsEnJeu()[i]->getName() << Display::RESET
+                     << Display::WHITE << " [" << Display::RED << Display::BOLD 
+                     << opponent->getChampionsEnJeu()[i]->getDefense() << " PV" 
+                     << Display::WHITE << "]" << Display::RESET;
                 if (opponent->getChampionsEnJeu()[i]->getActivated()) {
                     cout << Display::YELLOW << " (Activé)" << Display::RESET;
                 }
                 if (opponent->getChampionsEnJeu()[i]->getGuarding()) {
                     cout << Display::BLUE << " (🛡️ Garde)" << Display::RESET;
                 }
+                // DEBUG: Afficher les propriétés du champion adverse
+                cout << Display::MAGENTA << " [DEBUG: getGuarding()=" << (opponent->getChampionsEnJeu()[i]->getGuarding() ? "true" : "false") << "]" << Display::RESET;
                 cout << endl;
             }
         }
@@ -130,14 +141,16 @@ void Game::playTurn(Player* currentPlayer) {
         cout << Display::CYAN << "│ " << Display::WHITE << "[2] 📖 Lire la description d'une carte                " << Display::CYAN << "│" << Display::RESET << endl;
         cout << Display::CYAN << "│ " << Display::WHITE << "[3] 🏪 Acheter une carte du marché                   " << Display::CYAN << "│" << Display::RESET << endl;
         cout << Display::CYAN << "│ " << Display::WHITE << "[4] ⚔️  Attaquer l'adversaire ou ses champions        " << Display::CYAN << "│" << Display::RESET << endl;
-        cout << Display::CYAN << "│ " << Display::WHITE << "[5] ⏭️  Finir le tour                                 " << Display::CYAN << "│" << Display::RESET << endl;
+        cout << Display::CYAN << "│ " << Display::WHITE << "[5] 💀 Sacrifier une carte                           " << Display::CYAN << "│" << Display::RESET << endl;
+        cout << Display::CYAN << "│ " << Display::WHITE << "[6] 🛡️  Utiliser une capacité d'un champion en jeu    " << Display::CYAN << "│" << Display::RESET << endl;
+        cout << Display::CYAN << "│ " << Display::WHITE << "[7] ⏭️  Finir le tour                                 " << Display::CYAN << "│" << Display::RESET << endl;
         cout << Display::CYAN << "└──────────────────────────────────────────────────────────┘" << Display::RESET << endl;
         
         int choice;
         do {
-            cout << Display::YELLOW << Display::BOLD << "🎯 Votre choix (1-5): " << Display::RESET;
+            cout << Display::YELLOW << Display::BOLD << "🎯 Votre choix (1-7): " << Display::RESET;
             cin >> choice;
-        } while (choice < 1 || choice > 5);
+        } while (choice < 1 || choice > 7);
         
         switch (choice) {
             case 1:
@@ -153,6 +166,12 @@ void Game::playTurn(Player* currentPlayer) {
                 attackTarget(currentPlayer);
                 break;
             case 5:
+                sacrificeCard(currentPlayer);
+                break;
+            case 6:
+                useChampionAbility(currentPlayer);
+                break;
+            case 7:
                 turnFinished = true;
                 break;
         }
@@ -331,7 +350,176 @@ void Game::attackTarget(Player* currentPlayer) {
         int championIndex = (targetableChampions.empty() || !opponent->hasGuardingChampions()) ? choice - 2 : choice - 1;
         ChampionCard* targetChampion = targetableChampions[championIndex];
         
-        opponent->stunChampion(targetChampion);
-        cout << currentPlayer->getName() << " assomme le champion " << targetChampion->getName() << " de " << opponent->getName() << " !" << endl;
+        cout << currentPlayer->getName() << " attaque " << targetChampion->getName() << " avec " << combatToUse << " Combat !" << endl;
+        cout << targetChampion->getName() << " avait " << targetChampion->getDefense() << " PV." << endl;
+        
+        // Infliger les dégâts au champion
+        targetChampion->takeDamage(combatToUse);
+        
+        if (targetChampion->getDefense() <= 0) {
+            // Champion assommé
+            opponent->stunChampion(targetChampion);
+            cout << Display::RED << Display::BOLD << "💀 " << targetChampion->getName() << " est assommé et envoyé en défausse !" << Display::RESET << endl;
+        } else {
+            // Champion survit mais a perdu des PV
+            cout << Display::YELLOW << "⚡ " << targetChampion->getName() << " survit avec " << targetChampion->getDefense() << " PV restants." << Display::RESET << endl;
+        }
     }
+}
+
+void Game::sacrificeCard(Player* currentPlayer) {
+    // Vérifier s'il y a des cartes à sacrifier
+    bool hasCardsToSacrifice = !currentPlayer->getHand().empty() || 
+                               !currentPlayer->getCartesEnJeu().empty() || 
+                               !currentPlayer->getChampionsEnJeu().empty();
+    
+    if (!hasCardsToSacrifice) {
+        cout << Display::RED << "Aucune carte disponible pour le sacrifice." << Display::RESET << endl;
+        return;
+    }
+    
+    cout << Display::MAGENTA << Display::BOLD << "💀 SACRIFIER UNE CARTE 💀" << Display::RESET << endl;
+    cout << Display::CYAN << "Où voulez-vous sacrifier une carte ?" << Display::RESET << endl;
+    cout << Display::WHITE << "1. Main (" << currentPlayer->getHand().size() << " cartes)" << Display::RESET << endl;
+    cout << Display::WHITE << "2. Cartes en jeu (" << currentPlayer->getCartesEnJeu().size() << " cartes)" << Display::RESET << endl;
+    cout << Display::WHITE << "3. Champions en jeu (" << currentPlayer->getChampionsEnJeu().size() << " champions)" << Display::RESET << endl;
+    cout << Display::WHITE << "0. Annuler" << Display::RESET << endl;
+    
+    int sourceChoice;
+    do {
+        cout << Display::YELLOW << "Votre choix (0-3): " << Display::RESET;
+        cin >> sourceChoice;
+    } while (sourceChoice < 0 || sourceChoice > 3);
+    
+    if (sourceChoice == 0) {
+        cout << Display::WHITE << "Sacrifice annulé." << Display::RESET << endl;
+        return;
+    }
+    
+    if (sourceChoice == 1) {
+        // Sacrifier depuis la main
+        if (currentPlayer->getHand().empty()) {
+            cout << Display::RED << "Votre main est vide." << Display::RESET << endl;
+            return;
+        }
+        
+        cout << Display::CYAN << "Choisissez une carte de votre main à sacrifier :" << Display::RESET << endl;
+        for (size_t i = 0; i < currentPlayer->getHand().size(); i++) {
+            cout << Display::WHITE << (i + 1) << ". " << currentPlayer->getHand()[i]->getName() << Display::RESET << endl;
+        }
+        
+        int cardChoice;
+        do {
+            cout << Display::YELLOW << "Votre choix (1-" << currentPlayer->getHand().size() << "): " << Display::RESET;
+            cin >> cardChoice;
+        } while (cardChoice < 1 || cardChoice > static_cast<int>(currentPlayer->getHand().size()));
+        
+        Card* cardToSacrifice = currentPlayer->getHand()[cardChoice - 1];
+        cardToSacrifice->sacrifice(currentPlayer, this, false);
+        
+    } else if (sourceChoice == 2) {
+        // Sacrifier depuis les cartes en jeu
+        if (currentPlayer->getCartesEnJeu().empty()) {
+            cout << Display::RED << "Aucune carte en jeu." << Display::RESET << endl;
+            return;
+        }
+        
+        cout << Display::CYAN << "Choisissez une carte en jeu à sacrifier :" << Display::RESET << endl;
+        for (size_t i = 0; i < currentPlayer->getCartesEnJeu().size(); i++) {
+            cout << Display::WHITE << (i + 1) << ". " << currentPlayer->getCartesEnJeu()[i]->getName() << Display::RESET << endl;
+        }
+        
+        int cardChoice;
+        do {
+            cout << Display::YELLOW << "Votre choix (1-" << currentPlayer->getCartesEnJeu().size() << "): " << Display::RESET;
+            cin >> cardChoice;
+        } while (cardChoice < 1 || cardChoice > static_cast<int>(currentPlayer->getCartesEnJeu().size()));
+        
+        Card* cardToSacrifice = currentPlayer->getCartesEnJeu()[cardChoice - 1];
+        cardToSacrifice->sacrifice(currentPlayer, this, false);
+        
+    } else if (sourceChoice == 3) {
+        // Sacrifier un champion en jeu
+        if (currentPlayer->getChampionsEnJeu().empty()) {
+            cout << Display::RED << "Aucun champion en jeu." << Display::RESET << endl;
+            return;
+        }
+        
+        cout << Display::CYAN << "Choisissez un champion à sacrifier :" << Display::RESET << endl;
+        for (size_t i = 0; i < currentPlayer->getChampionsEnJeu().size(); i++) {
+            cout << Display::WHITE << (i + 1) << ". " << currentPlayer->getChampionsEnJeu()[i]->getName() << Display::RESET << endl;
+        }
+        
+        int championChoice;
+        do {
+            cout << Display::YELLOW << "Votre choix (1-" << currentPlayer->getChampionsEnJeu().size() << "): " << Display::RESET;
+            cin >> championChoice;
+        } while (championChoice < 1 || championChoice > static_cast<int>(currentPlayer->getChampionsEnJeu().size()));
+        
+        ChampionCard* championToSacrifice = currentPlayer->getChampionsEnJeu()[championChoice - 1];
+        championToSacrifice->sacrifice(currentPlayer, this, false);
+    }
+}
+
+void Game::useChampionAbility(Player* currentPlayer) {
+    if (currentPlayer->getChampionsEnJeu().empty()) {
+        cout << Display::RED << "❌ Vous n'avez aucun champion en jeu !" << Display::RESET << endl;
+        return;
+    }
+    
+    // Afficher les champions disponibles
+    cout << Display::GREEN << Display::BOLD << "🛡️  Champions en jeu disponibles :" << Display::RESET << endl;
+    Display::printSeparator("", "-", 50);
+    
+    bool hasAvailableChampions = false;
+    for (size_t i = 0; i < currentPlayer->getChampionsEnJeu().size(); i++) {
+        ChampionCard* champion = currentPlayer->getChampionsEnJeu()[i];
+        cout << Display::CYAN << "   " << (i + 1) << ". " << Display::WHITE << Display::BOLD 
+             << champion->getName() << Display::RESET
+             << Display::WHITE << " [" << Display::RED << Display::BOLD 
+             << champion->getDefense() << " PV" 
+             << Display::WHITE << "]" << Display::RESET;
+        
+        // Debug: afficher l'état réel de isActivated
+        cout << Display::MAGENTA << " [DEBUG: isActivated=" << (champion->getActivated() ? "true" : "false") << "]" << Display::RESET;
+        
+        if (champion->getActivated()) {
+            cout << Display::YELLOW << " (Déjà activé ce tour)" << Display::RESET;
+        } else {
+            cout << Display::GREEN << " (Disponible)" << Display::RESET;
+            hasAvailableChampions = true;
+        }
+        cout << endl;
+    }
+    
+    if (!hasAvailableChampions) {
+        cout << Display::YELLOW << "⚠️  Tous vos champions ont déjà été activés ce tour !" << Display::RESET << endl;
+        return;
+    }
+    
+    cout << Display::CYAN << "   0. " << Display::WHITE << "Annuler" << Display::RESET << endl;
+    Display::printSeparator("", "-", 50);
+    
+    int choice;
+    do {
+        cout << Display::YELLOW << Display::BOLD << "🎯 Quel champion activer ? (0-" 
+             << currentPlayer->getChampionsEnJeu().size() << "): " << Display::RESET;
+        cin >> choice;
+    } while (choice < 0 || choice > static_cast<int>(currentPlayer->getChampionsEnJeu().size()));
+    
+    if (choice == 0) {
+        cout << Display::WHITE << "Action annulée." << Display::RESET << endl;
+        return;
+    }
+    
+    ChampionCard* selectedChampion = currentPlayer->getChampionsEnJeu()[choice - 1];
+    
+    if (selectedChampion->getActivated()) {
+        cout << Display::RED << "❌ Ce champion a déjà été activé ce tour !" << Display::RESET << endl;
+        return;
+    }
+    
+    // Activer le champion
+    cout << Display::GREEN << Display::BOLD << "⚔️  Activation de " << selectedChampion->getName() << " !" << Display::RESET << endl;
+    selectedChampion->activateAbility(currentPlayer, this);
 }

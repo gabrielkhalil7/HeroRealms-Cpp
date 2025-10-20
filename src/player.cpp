@@ -70,7 +70,7 @@ void Player::showHand() const {
             
             std::cout << Display::CYAN << "│ " << Display::WHITE << "[" << (i + 1) << "] " 
                       << factionColor << Display::BOLD << std::left << std::setw(20) << card->getName() << Display::RESET
-                      << Display::YELLOW << " 💰" << std::setw(2) << card->getCost() << Display::WHITE << " Or  "
+                      << Display::YELLOW << " 🪙" << std::setw(2) << card->getCost() << Display::WHITE << " Or  "
                       << factionColor << factionSymbol 
                       << std::string(25 - card->getName().length(), ' ')
                       << Display::CYAN << "│" << Display::RESET << std::endl;
@@ -128,9 +128,18 @@ void Player::playCard(int cardIndex, Game* game) {
     
     Card* card = main[cardIndex];
     
-    // Retirer la carte de la main et la mettre en jeu
+    // Retirer la carte de la main
     main.erase(main.begin() + cardIndex);
-    cartesEnJeu.push_back(card);
+    
+    // Vérifier si c'est un champion
+    ChampionCard* champion = dynamic_cast<ChampionCard*>(card);
+    if (champion) {
+        // Les champions vont dans championsEnJeu
+        championsEnJeu.push_back(champion);
+    } else {
+        // Les autres cartes vont dans cartesEnJeu
+        cartesEnJeu.push_back(card);
+    }
     
     // Jouer la carte
     card->play(this, game);
@@ -345,6 +354,15 @@ void Player::endTurn() {
         defausse->addCard(card);
     }
     cartesEnJeu.clear();
+    
+    // Désactiver tous les champions en jeu (ils restent en jeu mais sont désactivés)
+    for (ChampionCard* champion : championsEnJeu) {
+        std::cout << "[DEBUG] Fin de tour - " << champion->getName() 
+                  << " defence: " << champion->getDefense() << " -> " << champion->getMaxDefense()
+                  << " isActivated: " << (champion->getActivated() ? "true" : "false") << " -> false" << std::endl;
+        champion->setDefenseActuelle(champion->getMaxDefense()); //  on retablit la defense
+        champion->setActivated(false);  // on le desactive pour le prochain tour
+    }
     
     // Defausser toutes les cartes de la main (celles qui ne sont pas jouees)
     for (Card* card : main) {

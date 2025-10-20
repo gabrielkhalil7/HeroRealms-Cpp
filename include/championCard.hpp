@@ -11,7 +11,8 @@ class ChampionCard : public Card {
         int goldValue;
         int combatValue;
         int healthValue;
-        int defense;
+        int defense;          // Défense maximale
+        int defenseActuelle;  // Défense actuelle (après dégâts)
         bool isGuarding;
         bool isActivated;
         
@@ -24,7 +25,10 @@ class ChampionCard : public Card {
         // Méthodes spécifiques aux champions
         virtual void activateAbility(Player* owner, Game* game);
         void takeDamage(int damage);
-        bool isAlive() const { return defense > 0; }
+        bool isAlive() const { return defenseActuelle > 0; }
+        int getDefense() const { return defenseActuelle; }  // Retourne la défense actuelle
+        int getMaxDefense() const { return defense; }       // Retourne la défense maximale
+        void setDefenseActuelle(int value) { defenseActuelle = value; }
         void setGuarding(bool guard) { isGuarding = guard; }
         bool getGuarding() const { return isGuarding; }
         bool getActivated() const { return isActivated; }
@@ -57,7 +61,7 @@ class ChampionCard : public Card {
         // Wild Champions
         static ChampionCard* createBroelynTisseuseDeSorts();
         static ChampionCard* createCronLeBerserker();
-        static ChampionCard* createLoupSinistre();
+        static ChampionCard* createLoupTerrifiant();
         static ChampionCard* createGrakGeantDeTempete();
         static ChampionCard* createGrognardOrc();
         static ChampionCard* createTorgenFendRoc();

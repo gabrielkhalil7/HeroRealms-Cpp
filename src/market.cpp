@@ -2,6 +2,7 @@
 #include "../include/card.hpp"
 #include "../include/actionCard.hpp"
 #include "../include/itemCard.hpp"
+#include "../include/championCard.hpp"
 #include "../include/display.hpp"
 #include <iostream>
 #include <algorithm> 
@@ -50,7 +51,7 @@ Market::Market() { // initialisation du marche par defaut (remplissage des carte
     gemmesDeFeu.push_back(gemmesDeFeu15);
     gemmesDeFeu.push_back(gemmesDeFeu16);
 
-
+    // CARTES DACTION
     ActionCard* taxation1 = new ActionCard("Taxation", 1, Faction::IMPERIAL, CardId::TAXATION);
     ActionCard* taxation2 = new ActionCard("Taxation", 1, Faction::IMPERIAL, CardId::TAXATION);
     ActionCard* taxation3 = new ActionCard("Taxation", 1, Faction::IMPERIAL, CardId::TAXATION);
@@ -97,7 +98,42 @@ Market::Market() { // initialisation du marche par defaut (remplissage des carte
     ActionCard* etincelle2 = new ActionCard("Étincelle", 1, Faction::SAUVAGE, CardId::ETINCELLE);
     ActionCard* etincelle3 = new ActionCard("Étincelle", 1, Faction::SAUVAGE, CardId::ETINCELLE);
     ActionCard* formeDeLoup = new ActionCard("Forme de loup", 5, Faction::SAUVAGE, CardId::FORME_DE_LOUP);
-    // a suivre ...
+
+    // LES CHAMPIONS
+    ChampionCard* arkusDragonImperial = ChampionCard::createArkusDragonImperial();
+    ChampionCard* darianMageDeGuerre = ChampionCard::createDarianMageDeGuerre();
+    ChampionCard* cristovLeJuste = ChampionCard::createCristovLeJuste();
+    ChampionCard* krakaGrandPretre = ChampionCard::createKrakaGrandPretre();
+    ChampionCard* hommeDArmes = ChampionCard::createHommeDArmes();
+    ChampionCard* hommeDarmes2 = ChampionCard::createHommeDArmes();
+    ChampionCard* maitreWeyan = ChampionCard::createMaitreWeyan();
+    ChampionCard* percepteurDeDime = ChampionCard::createPercepteurDeDime();
+    ChampionCard* percepteurDeDime2 = ChampionCard::createPercepteurDeDime();
+    ChampionCard* borgMercenaireOgre = ChampionCard::createBorgMercenaireOgre();
+    ChampionCard* myrosMageDeLaGuilde = ChampionCard::createMyrosMageDeLaGuilde();
+    ChampionCard* parovLExecuteur = ChampionCard::createParovLExecuteur();
+    ChampionCard* rakeMaitreAssassin = ChampionCard::createRakeMaitreAssassin();
+    ChampionCard* rasmusLeContrebandier = ChampionCard::createRasmusLeContrebandier();
+    ChampionCard* banditDesRues = ChampionCard::createBanditDesRues();
+    ChampionCard* banditDesRues2 = ChampionCard::createBanditDesRues();
+    ChampionCard* pretreDuCulte = ChampionCard::createPretreDuCulte();
+    ChampionCard* pretreDuCulte2 = ChampionCard::createPretreDuCulte();
+    ChampionCard* cultisteDeLaMort = ChampionCard::createCultisteDeLaMort();
+    ChampionCard* cultisteDeLaMort2 = ChampionCard::createCultisteDeLaMort();
+    ChampionCard* raylaTisseuseDeFins = ChampionCard::createRaylaTisseuseDeFins();
+    ChampionCard* krythosMaitreVampire = ChampionCard::createKrythosMaitreVampire();
+    ChampionCard* lysLInapparent = ChampionCard::createLysLInapparent();
+    ChampionCard* tyrannorLeDevoreur = ChampionCard::createTyrannorLeDevoreur();
+    ChampionCard* varrickLeNecromancien = ChampionCard::createVarrickLeNecromancien();
+    ChampionCard* broelynTisseuseDeSorts = ChampionCard::createBroelynTisseuseDeSorts();
+    ChampionCard* cronLeBerserker = ChampionCard::createCronLeBerserker();
+    ChampionCard* loupTerrifiant = ChampionCard::createLoupTerrifiant();
+    ChampionCard* grakGeantDeTempete = ChampionCard::createGrakGeantDeTempete();
+    ChampionCard* grognardOrc = ChampionCard::createGrognardOrc();
+    ChampionCard* grognardOrc2 = ChampionCard::createGrognardOrc();
+    ChampionCard* torgenFendRoc = ChampionCard::createTorgenFendRoc();
+    ChampionCard* chamanLoup = ChampionCard::createChamanLoup();
+    ChampionCard* chamanLoup2 = ChampionCard::createChamanLoup();   
 
     // AJOUT DES CARTES DANS LA PIOCHE DU MARCHE
     piocheDuMarche.push_back(taxation1);
@@ -146,6 +182,41 @@ Market::Market() { // initialisation du marche par defaut (remplissage des carte
     piocheDuMarche.push_back(etincelle2);
     piocheDuMarche.push_back(etincelle3);
     piocheDuMarche.push_back(formeDeLoup);
+
+    piocheDuMarche.push_back(arkusDragonImperial);
+    piocheDuMarche.push_back(darianMageDeGuerre);
+    piocheDuMarche.push_back(cristovLeJuste);
+    piocheDuMarche.push_back(krakaGrandPretre);
+    piocheDuMarche.push_back(hommeDArmes);
+    piocheDuMarche.push_back(hommeDarmes2);
+    piocheDuMarche.push_back(maitreWeyan);
+    piocheDuMarche.push_back(percepteurDeDime);
+    piocheDuMarche.push_back(percepteurDeDime2);
+    piocheDuMarche.push_back(borgMercenaireOgre);
+    piocheDuMarche.push_back(myrosMageDeLaGuilde);
+    piocheDuMarche.push_back(parovLExecuteur);
+    piocheDuMarche.push_back(rakeMaitreAssassin);
+    piocheDuMarche.push_back(rasmusLeContrebandier);
+    piocheDuMarche.push_back(banditDesRues);
+    piocheDuMarche.push_back(banditDesRues2);
+    piocheDuMarche.push_back(pretreDuCulte);
+    piocheDuMarche.push_back(pretreDuCulte2);
+    piocheDuMarche.push_back(cultisteDeLaMort);
+    piocheDuMarche.push_back(cultisteDeLaMort2);
+    piocheDuMarche.push_back(raylaTisseuseDeFins);
+    piocheDuMarche.push_back(krythosMaitreVampire);
+    piocheDuMarche.push_back(lysLInapparent);
+    piocheDuMarche.push_back(tyrannorLeDevoreur);
+    piocheDuMarche.push_back(varrickLeNecromancien);
+    piocheDuMarche.push_back(broelynTisseuseDeSorts);
+    piocheDuMarche.push_back(cronLeBerserker);
+    piocheDuMarche.push_back(loupTerrifiant);
+    piocheDuMarche.push_back(grakGeantDeTempete);
+    piocheDuMarche.push_back(grognardOrc);
+    piocheDuMarche.push_back(grognardOrc2);
+    piocheDuMarche.push_back(torgenFendRoc);
+    piocheDuMarche.push_back(chamanLoup);
+    piocheDuMarche.push_back(chamanLoup2);
 
     // Mélanger la pioche du marché
     std::random_device rd;

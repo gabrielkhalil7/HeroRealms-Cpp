@@ -21,6 +21,8 @@ public:
     void readCardDescription(Player* currentPlayer);
     void buyCardFromMarket(Player* currentPlayer);
     void attackTarget(Player* currentPlayer);
+    void sacrificeCard(Player* currentPlayer);
+    void useChampionAbility(Player* currentPlayer);
     
     // getters et setters
     Player* getJoueur1() const { return joueur1; }
