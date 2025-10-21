@@ -42,6 +42,10 @@ public:
     void attack(Player* cible, int degats);
     //void buyCard(Market* marche, int index);
     
+    // God Mode methods
+    void setHealth(int hp) { health = hp; }
+    void addCardToHand(Card* card) { main.push_back(card); }
+    
     // Méthodes pour gérer les ressources
     void addGold(int amount);
     void addCombat(int amount);

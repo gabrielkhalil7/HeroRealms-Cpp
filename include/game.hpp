@@ -8,6 +8,10 @@ class Game {
     Player* joueur2;
     Market* marche;
     bool godMode;
+    
+    // Variables pour sauvegarder les PV avant God Mode
+    int savedHealthJoueur1;
+    int savedHealthJoueur2;
 
 public:
     Game(const std::string& player1Name, const std::string& player2Name);
@@ -31,6 +35,10 @@ public:
     Market* getMarket() const { return marche; }
     bool isGodMode() const { return godMode; }
     void setGodMode(bool mode) { godMode = mode; }
+    
+    // God Mode methods
+    void toggleGodMode();
+    void buyCardFromFullMarket(Player* currentPlayer);
 };
 
 #endif

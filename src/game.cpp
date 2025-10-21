@@ -8,6 +8,8 @@ using namespace std;
 Game::Game(const std::string& player1Name, const std::string& player2Name){
     //godmode par defaut a false
     godMode = false;
+    savedHealthJoueur1 = 50;  // Santé par défaut
+    savedHealthJoueur2 = 50;  // Santé par défaut
 
     // creation des joueurs
     joueur1 = new Player(player1Name);
@@ -144,13 +146,18 @@ void Game::playTurn(Player* currentPlayer) {
         cout << Display::CYAN << "│ " << Display::WHITE << "[5] 💀 Sacrifier une carte                           " << Display::CYAN << "│" << Display::RESET << endl;
         cout << Display::CYAN << "│ " << Display::WHITE << "[6] 🛡️  Utiliser une capacité d'un champion en jeu    " << Display::CYAN << "│" << Display::RESET << endl;
         cout << Display::CYAN << "│ " << Display::WHITE << "[7] ⏭️  Finir le tour                                 " << Display::CYAN << "│" << Display::RESET << endl;
+        cout << Display::CYAN << "│ " << (godMode ? Display::RED : Display::MAGENTA) << "[8] " << (godMode ? "🔮 Désactiver God Mode" : "🔓 Activer God Mode") << "                        " << Display::CYAN << "│" << Display::RESET << endl;
+        if (godMode) {
+            cout << Display::CYAN << "│ " << Display::YELLOW << "[9] 🌟 Acheter depuis toute la pioche             " << Display::CYAN << "│" << Display::RESET << endl;
+        }
         cout << Display::CYAN << "└──────────────────────────────────────────────────────────┘" << Display::RESET << endl;
         
+        int maxChoice = godMode ? 9 : 8;
         int choice;
         do {
-            cout << Display::YELLOW << Display::BOLD << "🎯 Votre choix (1-7): " << Display::RESET;
+            cout << Display::YELLOW << Display::BOLD << "🎯 Votre choix (1-" << maxChoice << "): " << Display::RESET;
             cin >> choice;
-        } while (choice < 1 || choice > 7);
+        } while (choice < 1 || choice > maxChoice);
         
         switch (choice) {
             case 1:
@@ -173,6 +180,14 @@ void Game::playTurn(Player* currentPlayer) {
                 break;
             case 7:
                 turnFinished = true;
+                break;
+            case 8:
+                toggleGodMode();
+                break;
+            case 9:
+                if (godMode) {
+                    buyCardFromFullMarket(currentPlayer);
+                }
                 break;
         }
         
@@ -523,4 +538,108 @@ void Game::useChampionAbility(Player* currentPlayer) {
     // Activer le champion
     cout << Display::GREEN << Display::BOLD << "⚔️  Activation de " << selectedChampion->getName() << " !" << Display::RESET << endl;
     selectedChampion->activateAbility(currentPlayer, this);
+}
+
+void Game::toggleGodMode() {
+    godMode = !godMode;
+    
+    if (godMode) {
+        cout << Display::RED << Display::BOLD << "\n🔮 ═══════════════════════════════════════ 🔮" << Display::RESET << endl;
+        cout << Display::RED << Display::BOLD << "     GOD MODE ACTIVÉ !" << Display::RESET << endl;
+        cout << Display::RED << Display::BOLD << "🔮 ═══════════════════════════════════════ 🔮\n" << Display::RESET << endl;
+        
+        cout << Display::YELLOW << "Effets du God Mode:" << Display::RESET << endl;
+        cout << Display::WHITE << "• Les joueurs passent à 1 PV" << Display::RESET << endl;
+        cout << Display::WHITE << "• Vous pouvez acheter depuis toute la pioche du marché" << Display::RESET << endl;
+        cout << Display::WHITE << "• Les cartes achetées vont directement en main\n" << Display::RESET << endl;
+        
+        // Sauvegarder les PV actuels avant de les changer
+        savedHealthJoueur1 = joueur1->getHealth();
+        savedHealthJoueur2 = joueur2->getHealth();
+        
+        cout << Display::CYAN << "💾 Sauvegarde des PV: " << joueur1->getName() << " (" 
+             << savedHealthJoueur1 << " PV), " << joueur2->getName() << " (" 
+             << savedHealthJoueur2 << " PV)" << Display::RESET << endl;
+        
+        // Mettre les deux joueurs à 1 PV
+        joueur1->setHealth(1);
+        joueur2->setHealth(1);
+        
+        cout << Display::RED << "⚠️  " << joueur1->getName() << " et " << joueur2->getName() 
+             << " ont maintenant 1 PV !" << Display::RESET << endl;
+    } else {
+        cout << Display::GREEN << Display::BOLD << "\n🔓 ═══════════════════════════════════════ 🔓" << Display::RESET << endl;
+        cout << Display::GREEN << Display::BOLD << "     GOD MODE DÉSACTIVÉ !" << Display::RESET << endl;
+        cout << Display::GREEN << Display::BOLD << "🔓 ═══════════════════════════════════════ 🔓\n" << Display::RESET << endl;
+        
+        // Restaurer les PV sauvegardés
+        joueur1->setHealth(savedHealthJoueur1);
+        joueur2->setHealth(savedHealthJoueur2);
+        
+        cout << Display::GREEN << "🔄 Restauration des PV: " << joueur1->getName() << " (" 
+             << savedHealthJoueur1 << " PV), " << joueur2->getName() << " (" 
+             << savedHealthJoueur2 << " PV)" << Display::RESET << endl;
+    }
+}
+
+void Game::buyCardFromFullMarket(Player* currentPlayer) {
+    marche->displayFullMarket();
+    
+    int choice;
+    cout << currentPlayer->getName() << ", quelle carte voulez-vous acheter ? (0 pour annuler): ";
+    cin >> choice;
+    
+    if (choice == 0) {
+        cout << "Achat annulé." << endl;
+        return;
+    }
+    
+    const auto& pioche = marche->getPiocheDuMarche();
+    
+    if (choice == static_cast<int>(pioche.size()) + 1) {
+        // Acheter une gemme de feu
+        Card* gem = marche->buyGem();
+        if (gem != nullptr) {
+            // Vérifier si le joueur a assez d'or
+            if (currentPlayer->getGold() >= gem->getCost()) {
+                currentPlayer->addGold(-gem->getCost());  // Déduire le coût
+                currentPlayer->addCardToHand(gem);  // God Mode: va directement en main
+                cout << Display::GREEN << Display::BOLD << "✨ " << currentPlayer->getName() 
+                     << " achète " << gem->getName() << " pour " << gem->getCost() 
+                     << " Or (ajoutée à la main) !" << Display::RESET << endl;
+            } else {
+                cout << Display::RED << "Pas assez d'or ! (Coût: " << gem->getCost() 
+                     << " Or, Vous avez: " << currentPlayer->getGold() << " Or)" << Display::RESET << endl;
+                // Remettre la gemme dans le stock
+                marche->getPiocheDuMarche();  // La gemme a déjà été retirée par buyGem, on ne peut pas la remettre facilement
+            }
+        } else {
+            cout << Display::RED << "Gemme indisponible." << Display::RESET << endl;
+        }
+        return;
+    }
+    
+    // Acheter une carte de la pioche complète (index 1-N correspond à 0-(N-1))
+    if (choice < 1 || choice > static_cast<int>(pioche.size())) {
+        cout << Display::RED << "Choix invalide." << Display::RESET << endl;
+        return;
+    }
+    
+    // Vérifier le coût AVANT d'acheter
+    Card* cardToCheck = pioche[choice - 1];
+    if (currentPlayer->getGold() >= cardToCheck->getCost()) {
+        Card* card = marche->buyCardFromFullMarket(choice - 1);
+        if (card != nullptr) {
+            currentPlayer->addGold(-card->getCost());  // Déduire le coût
+            currentPlayer->addCardToHand(card);  // God Mode: va directement en main
+            cout << Display::GREEN << Display::BOLD << "✨ " << currentPlayer->getName() 
+                 << " achète " << card->getName() << " pour " << card->getCost() 
+                 << " Or (ajoutée à la main) !" << Display::RESET << endl;
+        } else {
+            cout << Display::RED << "Carte indisponible." << Display::RESET << endl;
+        }
+    } else {
+        cout << Display::RED << "Pas assez d'or ! (Coût: " << cardToCheck->getCost() 
+             << " Or, Vous avez: " << currentPlayer->getGold() << " Or)" << Display::RESET << endl;
+    }
 }

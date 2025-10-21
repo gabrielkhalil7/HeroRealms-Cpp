@@ -21,6 +21,11 @@ public:
     void refill();
     void display() const;
     void addSacrificedCard(Card* card) { cartesSacrifiees.push_back(card); }
+    
+    // God Mode methods
+    const std::vector<Card*>& getPiocheDuMarche() const { return piocheDuMarche; }
+    void displayFullMarket() const;  // Afficher toute la pioche du marché
+    Card* buyCardFromFullMarket(int index);  // Acheter depuis toute la pioche
 };
 
 #endif

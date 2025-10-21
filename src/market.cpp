@@ -299,3 +299,47 @@ void Market::refill() {
         piocheDuMarche.pop_back();
     }
 }
+
+// God Mode: Afficher toute la pioche du marché
+void Market::displayFullMarket() const {
+    std::cout << std::endl;
+    Display::printSeparator("🔮 GOD MODE - TOUTE LA PIOCHE DU MARCHÉ 🔮", "=", 80);
+    
+    std::cout << Display::CYAN << "┌──────────────────────────────── " << Display::BOLD << Display::YELLOW << "TOUTES LES CARTES DISPONIBLES" << Display::RESET << Display::CYAN << " ────────────────────────────────┐" << Display::RESET << std::endl;
+    
+    // Afficher toutes les cartes de la pioche
+    for (size_t i = 0; i < piocheDuMarche.size(); ++i) {
+        Card* card = piocheDuMarche[i];
+        std::string factionColor = Display::getFactionColor(card->getFaction());
+        std::string factionSymbol = Display::getFactionSymbol(card->getFaction());
+        
+        std::cout << Display::CYAN << "│ " << Display::WHITE << "[" << (i + 1) << "] " 
+                  << factionColor << Display::BOLD << std::left << std::setw(25) << card->getName() << Display::RESET
+                  << Display::YELLOW << " 🪙" << std::setw(2) << card->getCost() << Display::WHITE << " Or  "
+                  << factionColor << factionSymbol << "  " 
+                  << std::string(28 - card->getName().length(), ' ') 
+                  << Display::CYAN << "│" << Display::RESET << std::endl;
+    }
+    
+    // Ligne des gemmes de feu
+    std::cout << Display::CYAN << "│ " << Display::WHITE << "[" << (piocheDuMarche.size() + 1) << "] " 
+              << Display::RED << Display::BOLD << std::left << std::setw(25) << "Gemmes de feu" << Display::RESET
+              << Display::YELLOW << " 🪙2" << Display::WHITE << " Or  "
+              << Display::RED << "💎 " << Display::WHITE << "Stock: " << Display::GREEN << Display::BOLD << gemmesDeFeu.size() 
+              << std::string(23, ' ')
+              << Display::CYAN << "│" << Display::RESET << std::endl;
+    
+    std::cout << Display::CYAN << "└────────────────────────────────────────────────────────────────────────────────────────────┘" << Display::RESET << std::endl;
+    std::cout << std::endl;
+}
+
+// God Mode: Acheter depuis toute la pioche du marché
+Card* Market::buyCardFromFullMarket(int index) {
+    if (index < 0 || index >= static_cast<int>(piocheDuMarche.size())) {
+        return nullptr;
+    }
+    Card* boughtCard = piocheDuMarche[index];
+    piocheDuMarche.erase(piocheDuMarche.begin() + index);
+    // Ne pas refill car c'est le God Mode
+    return boughtCard;
+}
