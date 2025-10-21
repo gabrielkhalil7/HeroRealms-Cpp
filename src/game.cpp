@@ -162,16 +162,16 @@ void Game::playTurn(Player* currentPlayer) {
         cout << endl;
         Display::printSeparator("🎯 ACTIONS DISPONIBLES 🎯", "-", 60);
         cout << Display::CYAN << "┌──────────────────────────────────────────────────────────┐" << Display::RESET << endl;
-        cout << Display::CYAN << "│ " << Display::WHITE << "[1] 🃏 Jouer une carte de votre main                  " << Display::CYAN << "│" << Display::RESET << endl;
-        cout << Display::CYAN << "│ " << Display::WHITE << "[2] 📖 Lire la description d'une carte                " << Display::CYAN << "│" << Display::RESET << endl;
-        cout << Display::CYAN << "│ " << Display::WHITE << "[3] 🏪 Acheter une carte du marché                   " << Display::CYAN << "│" << Display::RESET << endl;
-        cout << Display::CYAN << "│ " << Display::WHITE << "[4] ⚔️  Attaquer l'adversaire ou ses champions        " << Display::CYAN << "│" << Display::RESET << endl;
-        cout << Display::CYAN << "│ " << Display::WHITE << "[5] 💀 Sacrifier une carte                           " << Display::CYAN << "│" << Display::RESET << endl;
-        cout << Display::CYAN << "│ " << Display::WHITE << "[6] 🛡️  Utiliser une capacité d'un champion en jeu    " << Display::CYAN << "│" << Display::RESET << endl;
-        cout << Display::CYAN << "│ " << Display::WHITE << "[7] ⏭️  Finir le tour                                 " << Display::CYAN << "│" << Display::RESET << endl;
-        cout << Display::CYAN << "│ " << (godMode ? Display::RED : Display::MAGENTA) << "[8] " << (godMode ? "🔮 Désactiver God Mode" : "🔓 Activer God Mode") << "                        " << Display::CYAN << "│" << Display::RESET << endl;
+        cout << Display::CYAN << "│ " << Display::WHITE << "[1] 🃏 Jouer une carte de votre main                     " << Display::CYAN << "│" << Display::RESET << endl;
+        cout << Display::CYAN << "│ " << Display::WHITE << "[2] 📖 Lire la description d'une carte                   " << Display::CYAN << "│" << Display::RESET << endl;
+        cout << Display::CYAN << "│ " << Display::WHITE << "[3] 🏪 Acheter une carte du marché                       " << Display::CYAN << "│" << Display::RESET << endl;
+        cout << Display::CYAN << "│ " << Display::WHITE << "[4] ⚔️  Attaquer l'adversaire ou ses champions            " << Display::CYAN << "│" << Display::RESET << endl;
+        cout << Display::CYAN << "│ " << Display::WHITE << "[5] 💀 Sacrifier une carte                               " << Display::CYAN << "│" << Display::RESET << endl;
+        cout << Display::CYAN << "│ " << Display::WHITE << "[6] 🛡️  Utiliser une capacité d'un champion en jeu        " << Display::CYAN << "│" << Display::RESET << endl;
+        cout << Display::CYAN << "│ " << Display::WHITE << "[7] ⏭️  Finir le tour                                     " << Display::CYAN << "│" << Display::RESET << endl;
+        cout << Display::CYAN << "│ " << (godMode ? Display::RED : Display::MAGENTA) << "[8] " << (godMode ? "🔮 Désactiver God Mode       " : "🔓 Activer God Mode          ") << "                        " << Display::CYAN << "│" << Display::RESET << endl;
         if (godMode) {
-            cout << Display::CYAN << "│ " << Display::YELLOW << "[9] 🌟 Acheter depuis toute la pioche             " << Display::CYAN << "│" << Display::RESET << endl;
+            cout << Display::CYAN << "│ " << Display::YELLOW << "[9] 🌟 Acheter depuis toute la pioche                    " << Display::CYAN << "│" << Display::RESET << endl;
         }
         cout << Display::CYAN << "└──────────────────────────────────────────────────────────┘" << Display::RESET << endl;
         
@@ -312,28 +312,23 @@ void Game::readCardDescription(Player* currentPlayer) {
         // Lire carte du marché - afficher toutes les descriptions
         marche->display();
         cout << "\nEntrez le numéro de la carte pour voir sa description (1-6): ";
-        int cardChoice;
-        cin >> cardChoice;
+        int cardChoice = getSafeInput(1, 6);
         
-        if (cardChoice >= 1 && cardChoice <= 6) {
-            if (cardChoice <= 5) {
-                // Cartes du marché principal (1-5)
-                Card* card = marche->getCard(cardChoice - 1);
-                if (card != nullptr) {
-                    cout << "\n=== " << card->getName() << " ===" << endl;
-                    cout << "Coût: " << card->getCost() << " Or" << endl;
-                    cout << "Description: " << card->getDescription() << endl;
-                } else {
-                    cout << "Cette position du marché est vide." << endl;
-                }
+        if (cardChoice <= 5) {
+            // Cartes du marché principal (1-5)
+            Card* card = marche->getCard(cardChoice - 1);
+            if (card != nullptr) {
+                cout << "\n=== " << card->getName() << " ===" << endl;
+                cout << "Coût: " << card->getCost() << " Or" << endl;
+                cout << "Description: " << card->getDescription() << endl;
             } else {
-                // Gemme de feu (option 6)
-                cout << "\n=== Rubis (Gemme de Feu) ===" << endl;
-                cout << "Coût: 2 Or" << endl;
-                cout << "Description: Gagnez 1 Or." << endl;
+                cout << "Cette position du marché est vide." << endl;
             }
         } else {
-            cout << "Choix invalide." << endl;
+            // Gemme de feu (option 6)
+            cout << "\n=== Rubis (Gemme de Feu) ===" << endl;
+            cout << "Coût: 2 Or" << endl;
+            cout << "Description: Gagnez 1 Or." << endl;
         }
     }
 }

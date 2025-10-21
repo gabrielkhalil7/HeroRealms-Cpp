@@ -82,7 +82,7 @@ void Player::showHand() const {
                       << factionColor << factionSymbol << " " << cardTypeIcon << " " 
                       << Display::BOLD << std::left << std::setw(16) << card->getName() << Display::RESET
                       << Display::YELLOW << " 🪙" << std::setw(2) << card->getCost() << Display::WHITE << " Or"
-                      << std::string(18 - card->getName().length(), ' ')
+                      << std::string(std::max(0, 18 - static_cast<int>(card->getName().length())), ' ')
                       << Display::CYAN << "│" << Display::RESET << std::endl;
         }
         std::cout << Display::CYAN << "└────────────────────────────────────────────────────────┘" << Display::RESET << std::endl;

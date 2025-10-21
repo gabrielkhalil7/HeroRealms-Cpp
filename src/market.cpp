@@ -264,7 +264,7 @@ void Market::display() const {
     Display::printSeparator("🏪 MARCHÉ 🏪", "=", 80);
     
     // En-tête du marché
-    std::cout << Display::CYAN << "┌──────────────────────────── " << Display::BOLD << Display::YELLOW << "CARTES DISPONIBLES" << Display::RESET << Display::CYAN << " ────────────────────────────┐" << Display::RESET << std::endl;
+    std::cout << Display::CYAN << "┌──────────────────────────── " << Display::BOLD << Display::YELLOW << "CARTES DISPONIBLES" << Display::RESET << Display::CYAN << " ────────────────────────────────┐" << Display::RESET << std::endl;
     
     // Affichage des cartes en rangées
     for (size_t i = 0; i < cartesVisibles.size(); ++i) {
@@ -275,28 +275,57 @@ void Market::display() const {
         // Déterminer le type de carte et son icône (sans couleur de type)
         std::string cardTypeIcon = "";
         if (dynamic_cast<ChampionCard*>(card)) {
-            cardTypeIcon = "🛡️";
+            cardTypeIcon = "🛡️ ";
         } else if (dynamic_cast<ActionCard*>(card)) {
-            cardTypeIcon = "⚔️";
+            cardTypeIcon = "⚔️ ";
         } else if (dynamic_cast<ItemCard*>(card)) {
-            cardTypeIcon = "💎";
+            cardTypeIcon = "💎 ";
         }
         
-        std::cout << Display::CYAN << "│ " << Display::WHITE << "[" << (i + 1) << "] " 
-                  << factionColor << factionSymbol << " " << cardTypeIcon << " " 
-                  << Display::BOLD << std::left << std::setw(14) << card->getName() << Display::RESET
-                  << Display::YELLOW << " 🪙" << std::setw(2) << card->getCost() << Display::WHITE << " Or"
-                  << std::string(26 - card->getName().length(), ' ') 
-                  << Display::CYAN << "│" << Display::RESET << std::endl;
+        // Construire le début de la ligne
+        std::string indexStr = "[" + std::to_string(i + 1) + "]";
+        std::string line = Display::CYAN + "│ " + Display::WHITE + indexStr + " " +
+                          factionColor + factionSymbol + " " + cardTypeIcon + " " + Display::BOLD +
+                          card->getName() + Display::RESET;
+        
+        int visibleLength = 2 + indexStr.length() + 1 + 1 + 1 + 1 + 1 + card->getName().length();
+        int targetPosition = 48;
+        int spacesNeeded = std::max(1, targetPosition - visibleLength);
+        
+        line += std::string(spacesNeeded, ' ') + Display::YELLOW + " 🪙" + std::to_string(card->getCost()) + 
+                Display::WHITE + " Or" + Display::RESET;
+        
+        // Calculer les espaces finaux pour fermer proprement le rectangle
+        std::string costStr = std::to_string(card->getCost());
+        int finalVisibleLength = visibleLength + spacesNeeded + 1 + 1 + costStr.length() + 3; // + "X Or"
+        int totalWidth = 80; // Largeur totale désirée
+        int finalSpaces = std::max(0, totalWidth - finalVisibleLength - 1);
+        line += std::string(finalSpaces, ' ') + Display::CYAN + "│" + Display::RESET;
+        
+        std::cout << line << std::endl;
     }
     
-    // Ligne des gemmes de feu
-    std::cout << Display::CYAN << "│ " << Display::WHITE << "[6] " 
-              << Display::RED << Display::BOLD << std::left << std::setw(18) << "Gemmes de feu" << Display::RESET
-              << Display::YELLOW << " 🪙2" << Display::WHITE << " Or  "
-              << Display::RED << "💎 " << Display::WHITE << "Stock: " << Display::GREEN << Display::BOLD << gemmesDeFeu.size() 
-              << std::string(30, ' ')
-              << Display::CYAN << "│" << Display::RESET << std::endl;
+    // Ligne des gemmes de feu avec alignement cohérent
+    std::string gemLine = Display::CYAN + "│ " + Display::WHITE + "[6] " +
+                         Display::RED + "⚪ 💎 " + Display::BOLD + "Gemmes de feu" + Display::RESET;
+    
+    // Calculer l'alignement pour les gemmes (même logique que les cartes)
+    int gemVisibleLength = 2 + 3 + 1 + 2 + 2 + 13; 
+    int targetPosition = 50;
+    int gemSpacesNeeded = std::max(1, targetPosition - gemVisibleLength);
+    
+    gemLine += std::string(gemSpacesNeeded, ' ') + Display::YELLOW + " 🪙2" + 
+               Display::WHITE + " Or" + Display::RESET;
+    
+    // Ajouter info du stock et espaces finaux
+    std::string stockInfo = "  💎 Stock: " + std::to_string(gemmesDeFeu.size());
+    gemLine += Display::GREEN + stockInfo + Display::RESET;
+    
+    int finalGemLength = gemVisibleLength + gemSpacesNeeded + 5 + stockInfo.length(); // + " 🪙2 Or" + stock
+    int finalGemSpaces = std::max(0, 80 - finalGemLength - 1);
+    gemLine += std::string(finalGemSpaces, ' ') + Display::CYAN + "│" + Display::RESET;
+    
+    std::cout << gemLine << std::endl;
     
     std::cout << Display::CYAN << "└────────────────────────────────────────────────────────────────────────────────┘" << Display::RESET << std::endl;
     std::cout << std::endl;
@@ -323,12 +352,38 @@ void Market::displayFullMarket() const {
         std::string factionColor = Display::getFactionColor(card->getFaction());
         std::string factionSymbol = Display::getFactionSymbol(card->getFaction());
         
-        std::cout << Display::CYAN << "│ " << Display::WHITE << "[" << (i + 1) << "] " 
-                  << factionColor << Display::BOLD << std::left << std::setw(25) << card->getName() << Display::RESET
-                  << Display::YELLOW << " 🪙" << std::setw(2) << card->getCost() << Display::WHITE << " Or  "
-                  << factionColor << factionSymbol << "  " 
-                  << std::string(28 - card->getName().length(), ' ') 
-                  << Display::CYAN << "│" << Display::RESET << std::endl;
+        // Déterminer le type de carte et son icône (sans couleur de type)
+        std::string cardTypeIcon = "";
+        if (dynamic_cast<ChampionCard*>(card)) {
+            cardTypeIcon = "🛡️";
+        } else if (dynamic_cast<ActionCard*>(card)) {
+            cardTypeIcon = "⚔️";
+        } else if (dynamic_cast<ItemCard*>(card)) {
+            cardTypeIcon = "💎";
+        }
+        
+        // Construire le début de la ligne pour God Mode
+        std::string indexStr = "[" + std::to_string(i + 1) + "]";
+        std::string line = Display::CYAN + "│ " + Display::WHITE + indexStr + " " +
+                          factionColor + factionSymbol + " " + cardTypeIcon + " " + Display::BOLD +
+                          card->getName() + Display::RESET;
+        
+        // Calculer les espaces nécessaires pour aligner "🪙X Or" (God Mode plus large)
+        int visibleLength = 2 + indexStr.length() + 1 + 1 + 1 + 1 + 1 + card->getName().length(); // "│ [XX] 🔴 ⚔️ Nom"
+        int targetPosition = 60; // Position plus large pour God Mode
+        int spacesNeeded = std::max(1, targetPosition - visibleLength);
+        
+        line += std::string(spacesNeeded, ' ') + Display::YELLOW + " 🪙" + std::to_string(card->getCost()) + 
+                Display::WHITE + " Or" + Display::RESET;
+        
+        // Calculer les espaces finaux pour God Mode (largeur 100)
+        std::string costStr = std::to_string(card->getCost());
+        int finalVisibleLength = visibleLength + spacesNeeded + 1 + 1 + costStr.length() + 3; // + " 🪙X Or"
+        int totalWidth = 100; // Largeur totale plus large pour God Mode
+        int finalSpaces = std::max(0, totalWidth - finalVisibleLength - 1); // -1 pour le │ final
+        line += std::string(finalSpaces, ' ') + Display::CYAN + "│" + Display::RESET;
+        
+        std::cout << line << std::endl;
     }
     
     // Ligne des gemmes de feu

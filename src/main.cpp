@@ -14,8 +14,8 @@ int main() {
         std::cout << Display::CYAN << "┌──────────────────────────────────────────────────────┐" << Display::RESET << std::endl;
         std::cout << Display::CYAN << "│" << Display::WHITE << "                    MENU PRINCIPAL                    " << Display::CYAN << "│" << Display::RESET << std::endl;
         std::cout << Display::CYAN << "├──────────────────────────────────────────────────────┤" << Display::RESET << std::endl;
-        std::cout << Display::CYAN << "│ " << Display::GREEN << "[1] 🎮 Commencer une nouvelle partie             " << Display::CYAN << "│" << Display::RESET << std::endl;
-        std::cout << Display::CYAN << "│ " << Display::RED << "[2] 🚪 Quitter le jeu                            " << Display::CYAN << "│" << Display::RESET << std::endl;
+        std::cout << Display::CYAN << "│ " << Display::GREEN << "[1] 🎮 Commencer une nouvelle partie                 " << Display::CYAN << "│" << Display::RESET << std::endl;
+        std::cout << Display::CYAN << "│ " << Display::RED << "[2] 🚪 Quitter le jeu                                " << Display::CYAN << "│" << Display::RESET << std::endl;
         std::cout << Display::CYAN << "└──────────────────────────────────────────────────────┘" << Display::RESET << std::endl;
 
         std::cout << Display::YELLOW << Display::BOLD << "🎯 Entrez votre choix: " << Display::RESET;
