@@ -24,6 +24,9 @@ public:
     void sacrificeCard(Player* currentPlayer);
     void useChampionAbility(Player* currentPlayer);
     
+    // Fonction utilitaire pour une saisie sécurisée
+    static int getSafeInput(int min = 0, int max = 100);
+    
     // getters et setters
     Player* getJoueur1() const { return joueur1; }
     Player* getJoueur2() const { return joueur2; }

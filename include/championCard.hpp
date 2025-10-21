@@ -31,10 +31,7 @@ class ChampionCard : public Card {
         int getMaxDefense() const { return defense; }
         void setDefenseActuelle(int value) { defenseActuelle = value; }
         void setGuarding(bool guard) { isGuarding = guard; }
-        bool getGuarding() const { 
-            std::cout << "[DEBUG getGuarding] " << name << " isGuarding = " << isGuarding << std::endl;
-            return isGuarding; 
-        }
+        bool getGuarding() const { return isGuarding; }
         bool getActivated() const { return isActivated; }
         void setActivated(bool activated) { isActivated = activated; }
         
