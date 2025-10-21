@@ -68,11 +68,21 @@ void Player::showHand() const {
             std::string factionColor = Display::getFactionColor(card->getFaction());
             std::string factionSymbol = Display::getFactionSymbol(card->getFaction());
             
+            // Déterminer le type de carte et son icône (sans couleur de type)
+            std::string cardTypeIcon = "";
+            if (dynamic_cast<ChampionCard*>(card)) {
+                cardTypeIcon = "🛡️";
+            } else if (dynamic_cast<ActionCard*>(card)) {
+                cardTypeIcon = "⚔️";
+            } else if (dynamic_cast<ItemCard*>(card)) {
+                cardTypeIcon = "💎";
+            }
+            
             std::cout << Display::CYAN << "│ " << Display::WHITE << "[" << (i + 1) << "] " 
-                      << factionColor << Display::BOLD << std::left << std::setw(20) << card->getName() << Display::RESET
-                      << Display::YELLOW << " 🪙" << std::setw(2) << card->getCost() << Display::WHITE << " Or  "
-                      << factionColor << factionSymbol 
-                      << std::string(25 - card->getName().length(), ' ')
+                      << factionColor << factionSymbol << " " << cardTypeIcon << " " 
+                      << Display::BOLD << std::left << std::setw(16) << card->getName() << Display::RESET
+                      << Display::YELLOW << " 🪙" << std::setw(2) << card->getCost() << Display::WHITE << " Or"
+                      << std::string(18 - card->getName().length(), ' ')
                       << Display::CYAN << "│" << Display::RESET << std::endl;
         }
         std::cout << Display::CYAN << "└────────────────────────────────────────────────────────┘" << Display::RESET << std::endl;

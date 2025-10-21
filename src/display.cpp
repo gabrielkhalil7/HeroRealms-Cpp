@@ -72,9 +72,9 @@ void Display::printCenteredText(const std::string& text, int width) {
 
 std::string Display::getFactionColor(Faction faction) {
     switch (faction) {
-        case Faction::IMPERIAL: return BLUE;
-        case Faction::GUILDE: return YELLOW;
-        case Faction::NECROS: return MAGENTA;
+        case Faction::IMPERIAL: return YELLOW;
+        case Faction::GUILDE: return BLUE;
+        case Faction::NECROS: return RED;
         case Faction::SAUVAGE: return GREEN;
         case Faction::NEUTRE: return WHITE;
         default: return WHITE;
@@ -83,10 +83,10 @@ std::string Display::getFactionColor(Faction faction) {
 
 std::string Display::getFactionSymbol(Faction faction) {
     switch (faction) {
-        case Faction::IMPERIAL: return "⚔️";
-        case Faction::GUILDE: return "💰";
-        case Faction::NECROS: return "💀";
-        case Faction::SAUVAGE: return "🌿";
+        case Faction::IMPERIAL: return "🟡";
+        case Faction::GUILDE: return "🔵";
+        case Faction::NECROS: return "🔴";
+        case Faction::SAUVAGE: return "🟢";
         case Faction::NEUTRE: return "⚪";
         default: return "?";
     }

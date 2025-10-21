@@ -1,5 +1,7 @@
 #include "../include/game.hpp"
 #include "../include/championCard.hpp"
+#include "../include/actionCard.hpp"
+#include "../include/itemCard.hpp"
 #include "../include/display.hpp"
 #include <iostream>
 #include <limits>
@@ -212,7 +214,6 @@ void Game::playTurn(Player* currentPlayer) {
         
         if (!turnFinished) {
             cout << Display::WHITE << "\nAppuyez sur Entrée pour continuer..." << Display::RESET;
-            cin.ignore();
             cin.get();
         }
     }
@@ -223,8 +224,7 @@ void Game::playTurn(Player* currentPlayer) {
     currentPlayer->endTurn(); // Remet Or et Combat a 0, defausse les cartes en jeu, pioche 5 cartes
     
     cout << Display::WHITE << "Appuyez sur Entrée pour continuer..." << Display::RESET;
-    cin.ignore();
-    cin.get();
+    cin.get(); // Attendre l'Entrée
 }
 
 bool Game::isFinished() const {
@@ -243,7 +243,21 @@ void Game::playCardFromHand(Player* currentPlayer) {
     
     cout << "Choisissez une carte à jouer :" << endl;
     for (size_t i = 0; i < currentPlayer->getHand().size(); i++) {
-        cout << (i + 1) << ". " << currentPlayer->getHand()[i]->getName() << endl;
+        Card* card = currentPlayer->getHand()[i];
+        std::string factionColor = Display::getFactionColor(card->getFaction());
+        
+        // Déterminer le type de carte et son icône (sans couleur de type)
+        std::string cardTypeIcon = "";
+        if (dynamic_cast<ChampionCard*>(card)) {
+            cardTypeIcon = "🛡️";
+        } else if (dynamic_cast<ActionCard*>(card)) {
+            cardTypeIcon = "⚔️";
+        } else if (dynamic_cast<ItemCard*>(card)) {
+            cardTypeIcon = "💎";
+        }
+        
+        cout << (i + 1) << ". " << factionColor << Display::getFactionSymbol(card->getFaction()) 
+             << " " << cardTypeIcon << " " << card->getName() << Display::RESET << endl;
     }
     
     cout << "Votre choix (1-" << currentPlayer->getHand().size() << "): ";
@@ -269,14 +283,25 @@ void Game::readCardDescription(Player* currentPlayer) {
         
         cout << "Choisissez une carte de votre main :" << endl;
         for (size_t i = 0; i < currentPlayer->getHand().size(); i++) {
-            cout << (i + 1) << ". " << currentPlayer->getHand()[i]->getName() << endl;
+            Card* card = currentPlayer->getHand()[i];
+            std::string factionColor = Display::getFactionColor(card->getFaction());
+            
+            // Déterminer le type de carte et son icône (sans couleur de type)
+            std::string cardTypeIcon = "";
+            if (dynamic_cast<ChampionCard*>(card)) {
+                cardTypeIcon = "🛡️";
+            } else if (dynamic_cast<ActionCard*>(card)) {
+                cardTypeIcon = "⚔️";
+            } else if (dynamic_cast<ItemCard*>(card)) {
+                cardTypeIcon = "💎";
+            }
+            
+            cout << (i + 1) << ". " << factionColor << Display::getFactionSymbol(card->getFaction()) 
+                 << " " << cardTypeIcon << " " << card->getName() << Display::RESET << endl;
         }
         
-        int cardChoice;
-        do {
-            cout << "Votre choix (1-" << currentPlayer->getHand().size() << "): ";
-            cin >> cardChoice;
-        } while (cardChoice < 1 || cardChoice > static_cast<int>(currentPlayer->getHand().size()));
+        cout << "Votre choix (1-" << currentPlayer->getHand().size() << "): ";
+        int cardChoice = getSafeInput(1, static_cast<int>(currentPlayer->getHand().size()));
         
         Card* selectedCard = currentPlayer->getHand()[cardChoice - 1];
         cout << "\n=== " << selectedCard->getName() << " ===" << endl;
