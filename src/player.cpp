@@ -21,7 +21,7 @@ Player::~Player() {
     delete defausse;
 }
 
-void Player::initializeDeck() {
+void Player::initializeDeck() { 
     // Normalement 7 Or, 1 Épée courte, 1 Dague, 1 Rubis dans la pioche
     ItemCard* or1 = new ItemCard("Or", 0, Faction::NEUTRE, CardId::OR);
     ItemCard* or2 = new ItemCard("Or", 0, Faction::NEUTRE, CardId::OR);
@@ -33,7 +33,6 @@ void Player::initializeDeck() {
     ItemCard* epeeCourte = new ItemCard("Épée Courte", 1, Faction::NEUTRE, CardId::EPEE_COURTE);
     ItemCard* dague = new ItemCard("Dague", 1, Faction::NEUTRE, CardId::DAGUE);
     ItemCard* rubis = new ItemCard("Rubis", 0, Faction::NEUTRE, CardId::RUBIS);
-    ChampionCard* krakragrantpretre = ChampionCard::createKrakaGrandPretre();
     
     // Ajout à la pioche
     pioche->addCard(or1);
@@ -45,8 +44,7 @@ void Player::initializeDeck() {
     pioche->addCard(or7);
     pioche->addCard(epeeCourte);
     pioche->addCard(dague);
-    pioche->addCard(rubis);
-    pioche->addCard(krakragrantpretre);
+    pioche->addCard(rubis);  
 
     // Mélanger la pioche
     //pioche->shuffle();
@@ -359,9 +357,6 @@ void Player::endTurn() {
     
     // Désactiver tous les champions en jeu (ils restent en jeu mais sont désactivés)
     for (ChampionCard* champion : championsEnJeu) {
-        std::cout << "[DEBUG] Fin de tour - " << champion->getName() 
-                  << " defence: " << champion->getDefense() << " -> " << champion->getMaxDefense()
-                  << " isActivated: " << (champion->getActivated() ? "true" : "false") << " -> false" << std::endl;
         champion->setDefenseActuelle(champion->getMaxDefense()); //  on retablit la defense
         champion->setActivated(false);  // on le desactive pour le prochain tour
     }

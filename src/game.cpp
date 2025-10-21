@@ -2,6 +2,7 @@
 #include "../include/championCard.hpp"
 #include "../include/display.hpp"
 #include <iostream>
+#include <limits>
 
 using namespace std;
 
@@ -41,6 +42,30 @@ Game::~Game() {
     delete joueur1;
     delete joueur2;
     delete marche;
+}
+
+// Fonction utilitaire pour une saisie sécurisée d'entiers
+int Game::getSafeInput(int min, int max) {
+    int input;
+    while (true) {
+        if (cin >> input) {
+            // Entrée valide, vérifier si dans la plage
+            if (input >= min && input <= max) {
+                // Vider le buffer des caractères restants
+                cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
+                return input;
+            } else {
+                cout << Display::RED << "❌ Choix invalide ! Veuillez entrer un nombre entre " 
+                     << min << " et " << max << "." << Display::RESET << endl;
+            }
+        } else {
+            // Entrée invalide (non-numérique)
+            cout << Display::RED << "❌ Entrée invalide ! Veuillez entrer un nombre." << Display::RESET << endl;
+            cin.clear(); // Effacer le flag d'erreur
+            cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n'); // Vider le buffer
+        }
+        cout << Display::YELLOW << "Réessayez: " << Display::RESET;
+    }
 }
 
 void Game::start() {
@@ -104,8 +129,6 @@ void Game::playTurn(Player* currentPlayer) {
                 if (currentPlayer->getChampionsEnJeu()[i]->getGuarding()) {
                     cout << Display::BLUE << " (🛡️ Garde)" << Display::RESET;
                 }
-                // DEBUG: Afficher les propriétés du champion
-                cout << Display::MAGENTA << " [DEBUG: getGuarding()=" << (currentPlayer->getChampionsEnJeu()[i]->getGuarding() ? "true" : "false") << "]" << Display::RESET;
                 cout << endl;
             }
         }
@@ -129,8 +152,6 @@ void Game::playTurn(Player* currentPlayer) {
                 if (opponent->getChampionsEnJeu()[i]->getGuarding()) {
                     cout << Display::BLUE << " (🛡️ Garde)" << Display::RESET;
                 }
-                // DEBUG: Afficher les propriétés du champion adverse
-                cout << Display::MAGENTA << " [DEBUG: getGuarding()=" << (opponent->getChampionsEnJeu()[i]->getGuarding() ? "true" : "false") << "]" << Display::RESET;
                 cout << endl;
             }
         }
@@ -153,11 +174,9 @@ void Game::playTurn(Player* currentPlayer) {
         cout << Display::CYAN << "└──────────────────────────────────────────────────────────┘" << Display::RESET << endl;
         
         int maxChoice = godMode ? 9 : 8;
-        int choice;
-        do {
-            cout << Display::YELLOW << Display::BOLD << "🎯 Votre choix (1-" << maxChoice << "): " << Display::RESET;
-            cin >> choice;
-        } while (choice < 1 || choice > maxChoice);
+        cout << Display::YELLOW << Display::BOLD << "🎯 Votre choix (1-" << maxChoice << "): " << Display::RESET;
+        int choice = getSafeInput(1, maxChoice);
+
         
         switch (choice) {
             case 1:
@@ -227,11 +246,8 @@ void Game::playCardFromHand(Player* currentPlayer) {
         cout << (i + 1) << ". " << currentPlayer->getHand()[i]->getName() << endl;
     }
     
-    int choice;
-    do {
-        cout << "Votre choix (1-" << currentPlayer->getHand().size() << "): ";
-        cin >> choice;
-    } while (choice < 1 || choice > static_cast<int>(currentPlayer->getHand().size()));
+    cout << "Votre choix (1-" << currentPlayer->getHand().size() << "): ";
+    int choice = getSafeInput(1, static_cast<int>(currentPlayer->getHand().size()));
     
     currentPlayer->playCard(choice - 1, this); // playCard attend un index basé sur 0
 }
@@ -241,11 +257,8 @@ void Game::readCardDescription(Player* currentPlayer) {
     cout << "1. Carte de votre main" << endl;
     cout << "2. Carte du marché" << endl;
     
-    int choice;
-    do {
-        cout << "Votre choix (1-2): ";
-        cin >> choice;
-    } while (choice < 1 || choice > 2);
+    cout << "Votre choix (1-2): ";
+    int choice = getSafeInput(1, 2);
     
     if (choice == 1) {
         // Lire carte de la main
@@ -340,18 +353,12 @@ void Game::attackTarget(Player* currentPlayer) {
         return;
     }
     
-    int choice;
-    do {
-        cout << "Votre choix (1-" << (optionCount + targetableChampions.size() - 1) << "): ";
-        cin >> choice;
-    } while (choice < 1 || choice > static_cast<int>(optionCount + targetableChampions.size() - 1));
+    cout << "Votre choix (1-" << (optionCount + targetableChampions.size() - 1) << "): ";
+    int choice = getSafeInput(1, static_cast<int>(optionCount + targetableChampions.size() - 1));
     
     // Demander combien de combat utiliser
-    int combatToUse;
-    do {
-        cout << "Combien de Combat voulez-vous utiliser ? (1-" << currentPlayer->getCombat() << "): ";
-        cin >> combatToUse;
-    } while (combatToUse < 1 || combatToUse > currentPlayer->getCombat());
+    cout << "Combien de Combat voulez-vous utiliser ? (1-" << currentPlayer->getCombat() << "): ";
+    int combatToUse = getSafeInput(1, currentPlayer->getCombat());
     
     currentPlayer->useCombat(combatToUse);
     
@@ -400,11 +407,8 @@ void Game::sacrificeCard(Player* currentPlayer) {
     cout << Display::WHITE << "3. Champions en jeu (" << currentPlayer->getChampionsEnJeu().size() << " champions)" << Display::RESET << endl;
     cout << Display::WHITE << "0. Annuler" << Display::RESET << endl;
     
-    int sourceChoice;
-    do {
-        cout << Display::YELLOW << "Votre choix (0-3): " << Display::RESET;
-        cin >> sourceChoice;
-    } while (sourceChoice < 0 || sourceChoice > 3);
+    cout << Display::YELLOW << "Votre choix (0-3): " << Display::RESET;
+    int sourceChoice = getSafeInput(0, 3);
     
     if (sourceChoice == 0) {
         cout << Display::WHITE << "Sacrifice annulé." << Display::RESET << endl;
@@ -494,10 +498,7 @@ void Game::useChampionAbility(Player* currentPlayer) {
              << Display::WHITE << " [" << Display::RED << Display::BOLD 
              << champion->getDefense() << " PV" 
              << Display::WHITE << "]" << Display::RESET;
-        
-        // Debug: afficher l'état réel de isActivated ET l'adresse mémoire
-        cout << Display::MAGENTA << " [DEBUG: isActivated=" << (champion->getActivated() ? "true" : "false") 
-             << ", ptr=" << champion << "]" << Display::RESET;
+    
         
         if (champion->getActivated()) {
             cout << Display::YELLOW << " (Déjà activé ce tour)" << Display::RESET;
@@ -516,12 +517,9 @@ void Game::useChampionAbility(Player* currentPlayer) {
     cout << Display::CYAN << "   0. " << Display::WHITE << "Annuler" << Display::RESET << endl;
     Display::printSeparator("", "-", 50);
     
-    int choice;
-    do {
-        cout << Display::YELLOW << Display::BOLD << "🎯 Quel champion activer ? (0-" 
-             << currentPlayer->getChampionsEnJeu().size() << "): " << Display::RESET;
-        cin >> choice;
-    } while (choice < 0 || choice > static_cast<int>(currentPlayer->getChampionsEnJeu().size()));
+    cout << Display::YELLOW << Display::BOLD << "🎯 Quel champion activer ? (0-" 
+         << currentPlayer->getChampionsEnJeu().size() << "): " << Display::RESET;
+    int choice = getSafeInput(0, static_cast<int>(currentPlayer->getChampionsEnJeu().size()));
     
     if (choice == 0) {
         cout << Display::WHITE << "Action annulée." << Display::RESET << endl;

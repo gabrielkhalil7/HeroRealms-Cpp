@@ -18,11 +18,8 @@ int main() {
         std::cout << Display::CYAN << "│ " << Display::RED << "[2] 🚪 Quitter le jeu                            " << Display::CYAN << "│" << Display::RESET << std::endl;
         std::cout << Display::CYAN << "└──────────────────────────────────────────────────────┘" << Display::RESET << std::endl;
 
-        int choice;
-        do {
-            std::cout << Display::YELLOW << Display::BOLD << "🎯 Entrez votre choix: " << Display::RESET;
-            std::cin >> choice;
-        } while (choice < 1 || choice > 2);
+        std::cout << Display::YELLOW << Display::BOLD << "🎯 Entrez votre choix: " << Display::RESET;
+        int choice = Game::getSafeInput(1, 2);
 
         if (choice == 1) {
             std::string player1Name, player2Name;

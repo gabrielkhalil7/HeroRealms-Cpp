@@ -94,7 +94,6 @@ ChampionCard::ChampionCard(const std::string& n, int c, Faction f, CardId id)
                 goldValue = 1;
                 combatValue = 2;
                 isGuarding = false;
-                std::cout << "[DEBUG CONSTRUCTOR] Bandit des Rues créé avec isGuarding = " << isGuarding << std::endl;
                 break;
                 
             // ========== NECROS CHAMPIONS ==========
@@ -236,9 +235,7 @@ void ChampionCard::sacrifice(Player* owner, Game* game, bool fromEffects) {
     game->getMarket()->addSacrificedCard(this);
 }
 
-void ChampionCard::activateAbility(Player* owner, Game* game) {
-    std::cout << "[DEBUG activateAbility: ptr=" << this << ", isActivated=" << (isActivated ? "true" : "false") << "]" << std::endl;
-    
+void ChampionCard::activateAbility(Player* owner, Game* game) {    
     if (isActivated) {
         std::cout << name << " a déjà été activé ce tour." << std::endl;
         return;
