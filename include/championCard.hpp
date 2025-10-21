@@ -1,6 +1,7 @@
 #ifndef CHAMPION_CARD_H
 #define CHAMPION_CARD_H
 #include "card.hpp"
+#include <iostream>
 
 // Forward declarations
 class Player;
@@ -11,8 +12,8 @@ class ChampionCard : public Card {
         int goldValue;
         int combatValue;
         int healthValue;
-        int defense;          // Défense maximale
-        int defenseActuelle;  // Défense actuelle (après dégâts)
+        int defense; //defense max de la carte
+        int defenseActuelle;
         bool isGuarding;
         bool isActivated;
         
@@ -26,11 +27,14 @@ class ChampionCard : public Card {
         virtual void activateAbility(Player* owner, Game* game);
         void takeDamage(int damage);
         bool isAlive() const { return defenseActuelle > 0; }
-        int getDefense() const { return defenseActuelle; }  // Retourne la défense actuelle
-        int getMaxDefense() const { return defense; }       // Retourne la défense maximale
+        int getDefense() const { return defenseActuelle; }
+        int getMaxDefense() const { return defense; }
         void setDefenseActuelle(int value) { defenseActuelle = value; }
         void setGuarding(bool guard) { isGuarding = guard; }
-        bool getGuarding() const { return isGuarding; }
+        bool getGuarding() const { 
+            std::cout << "[DEBUG getGuarding] " << name << " isGuarding = " << isGuarding << std::endl;
+            return isGuarding; 
+        }
         bool getActivated() const { return isActivated; }
         void setActivated(bool activated) { isActivated = activated; }
         

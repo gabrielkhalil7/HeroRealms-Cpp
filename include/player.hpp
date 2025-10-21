@@ -49,8 +49,7 @@ public:
     
     // Méthodes pour accéder aux cartes en jeu
     const std::vector<Card*>& getCartesEnJeu() const { return cartesEnJeu; }
-    const std::vector<ChampionCard*>& getChampionsEnJeu() const { return championsEnJeu; }
-    std::vector<ChampionCard*>& getChampionsEnJeu() { return championsEnJeu; }  // Version non-const
+    std::vector<ChampionCard*>& getChampionsEnJeu() { return championsEnJeu; }
     const std::vector<Card*>& getHand() const { return main; }  // Accéder à la main
     
     // Méthode utilitaire pour compter les cartes d'une faction en jeu

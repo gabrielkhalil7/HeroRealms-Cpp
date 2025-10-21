@@ -33,6 +33,7 @@ void Player::initializeDeck() {
     ItemCard* epeeCourte = new ItemCard("Épée Courte", 1, Faction::NEUTRE, CardId::EPEE_COURTE);
     ItemCard* dague = new ItemCard("Dague", 1, Faction::NEUTRE, CardId::DAGUE);
     ItemCard* rubis = new ItemCard("Rubis", 0, Faction::NEUTRE, CardId::RUBIS);
+    ChampionCard* krakragrantpretre = ChampionCard::createKrakaGrandPretre();
     
     // Ajout à la pioche
     pioche->addCard(or1);
@@ -45,9 +46,10 @@ void Player::initializeDeck() {
     pioche->addCard(epeeCourte);
     pioche->addCard(dague);
     pioche->addCard(rubis);
+    pioche->addCard(krakragrantpretre);
 
     // Mélanger la pioche
-    pioche->shuffle();
+    //pioche->shuffle();
     std::cout << name << " a mélangé sa pioche." << std::endl;
 
     std::cout << name << " a été initialisé avec une pioche de " << pioche->size() << " cartes." << std::endl;

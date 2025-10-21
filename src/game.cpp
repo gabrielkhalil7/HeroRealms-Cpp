@@ -480,8 +480,9 @@ void Game::useChampionAbility(Player* currentPlayer) {
              << champion->getDefense() << " PV" 
              << Display::WHITE << "]" << Display::RESET;
         
-        // Debug: afficher l'état réel de isActivated
-        cout << Display::MAGENTA << " [DEBUG: isActivated=" << (champion->getActivated() ? "true" : "false") << "]" << Display::RESET;
+        // Debug: afficher l'état réel de isActivated ET l'adresse mémoire
+        cout << Display::MAGENTA << " [DEBUG: isActivated=" << (champion->getActivated() ? "true" : "false") 
+             << ", ptr=" << champion << "]" << Display::RESET;
         
         if (champion->getActivated()) {
             cout << Display::YELLOW << " (Déjà activé ce tour)" << Display::RESET;
