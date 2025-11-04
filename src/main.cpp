@@ -28,7 +28,6 @@ int main() {
             Display::printSeparator("🎮 CONFIGURATION DE LA PARTIE 🎮", "=", 60);
             
             std::cout << Display::GREEN << "👤 Nom du joueur 1: " << Display::RESET;
-            std::cin.ignore();
             std::getline(std::cin, player1Name);
             
             std::cout << Display::BLUE << "👤 Nom du joueur 2: " << Display::RESET;
